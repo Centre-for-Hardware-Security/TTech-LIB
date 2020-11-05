@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<CONFIG>
+	<CORES>24</CORES>
+
+	<!-- use only one target at a time-->
+	<TARGET>genus</TARGET>
+	<LIB>/export/designkits/tsmc/tsmc65/ip/msrflp/STDCELL/tcbn65lphvt_220a/FE/TSMCHOME/digital/Front_End/timing_power_noise/NLDM/tcbn65lphvt_220a/tcbn65lphvttc.lib</LIB>
+
+	<TARGET>dc</TARGET>
+	<LIBFOLDER>/export/designkits/tsmc/tsmc65/ip/msrflp/STDCELL/tcbn65lphvt_220a/FE/TSMCHOME/digital/Front_End/timing_power_noise/NLDM/tcbn65lphvt_220a/</LIBFOLDER>
+	<LIB>tcbn65lphvttc.db</LIB>
+
+</CONFIG>
+<MUL>
+	<NAME>two_way_karatsuba</NAME>
+
+	<WIDTH1>521</WIDTH1>
+	<WIDTH2>521</WIDTH2>
+  <DIGIT_SIZE>1</DIGIT_SIZE>
+	<CLOCK>2.45</CLOCK>
+	<PIPELINE>1</PIPELINE>
+
+</MUL>
+
