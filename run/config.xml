@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <CONFIG>
-	<CORES>24</CORES>
+	<CORES>8</CORES>
 
 	<!-- use only one target at a time-->
 	<TARGET>genus</TARGET>
@@ -15,10 +15,10 @@
 <MUL>
 	<NAME>two_way_karatsuba</NAME>
 
-	<WIDTH1>521</WIDTH1>
-	<WIDTH2>521</WIDTH2>
+	<WIDTH1>571</WIDTH1>
+	<WIDTH2>571</WIDTH2>
   <DIGIT_SIZE>1</DIGIT_SIZE>
-	<CLOCK>2.45</CLOCK>
+	<CLOCK>2.39</CLOCK>
 	<PIPELINE>1</PIPELINE>
 
 </MUL>

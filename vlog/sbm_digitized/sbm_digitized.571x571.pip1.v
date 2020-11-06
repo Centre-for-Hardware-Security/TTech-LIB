@@ -8,7 +8,7 @@ module sbm_digitized(clk, rst, a, b, c);
 parameter SIZEA = 571;
 parameter SIZEB = 571;
 parameter SIZEOF_DIGITS = 81;
-parameter DIGITS = 7;
+parameter DIGITS = 8;
 
 // Declaration of module inputs and outputs
 input clk;

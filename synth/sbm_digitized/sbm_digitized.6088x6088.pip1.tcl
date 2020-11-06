@@ -5,7 +5,7 @@ set_db syn_generic_effort express
 set_db syn_map_effort express
 set_db syn_opt_effort express
 set_db retime_verification_flow false
-set LIB {/export/designkits/tsmc/tsmc65/ip/msrflp/STDCELL/tcbn65lphvt_220a/FE/TSMCHOME/digital/Front_End/timing_power_noise/NLDM/tcbn65lphvt_220a/tcbn65lphvttc.lib}
+set LIB {your_lib_path.lib}
 set SOURCE_PATH {../../vlog/sbm_digitized/}
 set FILE_LIST {sbm_digitized.6088x6088.pip1.v}
 set_db init_hdl_search_path "$SOURCE_PATH"

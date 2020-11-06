@@ -267,12 +267,12 @@ void genMultipliers() {
       // Step_1
       vlog << "// Step-1 of 2-Way Karatsuba Multiplier" << endl;
       vlog << fact.snippet[VerilogFactory::ALWAYS] << endl;
-			vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::RESET1]) << endl;
-			vlog << fact.getResetStatement();
-			vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::END]) << endl;
-			vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::ELSEBEGIN]) << endl;
+			//vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::RESET1]) << endl;
+			//vlog << fact.getResetStatement();
+			//vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::END]) << endl;
+			//vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::ELSEBEGIN]) << endl;
 			vlog << fact.getMulLogic_2_Way_Karatsuba_Step_1(mul.width1, mul.width2, mul.pipeline) << endl;		
-			vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::END]) << endl;
+			//vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::END]) << endl;
 			vlog << fact.snippet[VerilogFactory::END] << endl;
       
       // Step_2
@@ -369,12 +369,12 @@ if (mul.name == "three_way_toom_cook") {
       // Step_1
       vlog << endl << "// Step-1 of 3-Way TCM Multiplier" << endl;
       vlog << fact.snippet[VerilogFactory::ALWAYS] << endl;
-			vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::RESET1]) << endl;
-			vlog << fact.getResetStatement();
-			vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::END]) << endl;
-			vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::ELSEBEGIN]) << endl;
+			//vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::RESET1]) << endl;
+			//vlog << fact.getResetStatement();
+			//vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::END]) << endl;
+			//vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::ELSEBEGIN]) << endl;
 			vlog << fact.getMulLogic_3_Way_TCM_Step_1(mul.width1, mul.width2, mul.pipeline); 		
-			vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::END]) << endl;
+			//vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::END]) << endl;
 			vlog << fact.snippet[VerilogFactory::END] << endl;
       
       // Step_2 (Part-1)
@@ -539,21 +539,21 @@ if (mul.name == "four_way_toom_cook") {
       vlog << "assign a2 = a[" << fact.getInternalDefinitionAssignSetMSB_as_m_times_3_over_4() << ":" << fact.getInternalDefinitionAssignSetLSB_as_m_times_2_over_4() << "];" << endl;
       vlog << "assign a3 = a[" << fact.getInternalDefinitionAssignSetMSB_as_m_minus_1_for_4_way_TCM() << ":" << fact.getInternalDefinitionAssignSetLSB_as_m_times_3_over_4() << "];" << endl;
       
-      vlog << "assign b0 = a[" << fact.getInternalDefinitionAssignSetMSB_as_m_over_4() << ":0];" << endl;
-      vlog << "assign b1 = a[" << fact.getInternalDefinitionAssignSetMSB_as_m_times_2_over_4() << ":" << fact.getInternalDefinitionAssignSetLSB_as_m_over_4() << "];" << endl;
-      vlog << "assign b2 = a[" << fact.getInternalDefinitionAssignSetMSB_as_m_times_3_over_4() << ":" << fact.getInternalDefinitionAssignSetLSB_as_m_times_2_over_4() << "];" << endl;
-      vlog << "assign b3 = a[" << fact.getInternalDefinitionAssignSetMSB_as_m_minus_1_for_4_way_TCM() << ":" << fact.getInternalDefinitionAssignSetLSB_as_m_times_3_over_4() << "];" << endl;
+      vlog << "assign b0 = b[" << fact.getInternalDefinitionAssignSetMSB_as_m_over_4() << ":0];" << endl;
+      vlog << "assign b1 = b[" << fact.getInternalDefinitionAssignSetMSB_as_m_times_2_over_4() << ":" << fact.getInternalDefinitionAssignSetLSB_as_m_over_4() << "];" << endl;
+      vlog << "assign b2 = b[" << fact.getInternalDefinitionAssignSetMSB_as_m_times_3_over_4() << ":" << fact.getInternalDefinitionAssignSetLSB_as_m_times_2_over_4() << "];" << endl;
+      vlog << "assign b3 = b[" << fact.getInternalDefinitionAssignSetMSB_as_m_minus_1_for_4_way_TCM() << ":" << fact.getInternalDefinitionAssignSetLSB_as_m_times_3_over_4() << "];" << endl;
       
       
       // Step_1
       vlog << endl << "// Step-1 of 4-Way TCM Multiplier" << endl;
       vlog << fact.snippet[VerilogFactory::ALWAYS] << endl;
-			vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::RESET1]) << endl;
-			vlog << fact.getResetStatement();
-			vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::END]) << endl;
-			vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::ELSEBEGIN]) << endl;
+			//vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::RESET1]) << endl;
+			//vlog << fact.getResetStatement();
+			//vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::END]) << endl;
+			//vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::ELSEBEGIN]) << endl;
 			vlog << fact.getMulLogic_4_Way_TCM_Step_1(mul.width1, mul.width2, mul.pipeline); 		
-			vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::END]) << endl;
+			//vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::END]) << endl;
 			vlog << fact.snippet[VerilogFactory::END] << endl;
       
       // Step_2 (Part-1)
@@ -689,7 +689,7 @@ if (mul.name == "four_way_toom_cook") {
       fact.addParameter("SIZEA", mul.width1);
       fact.addParameter("SIZEB", mul.width2);
       fact.addParameter("SIZEOF_DIGITS", mul.digit_size);
-      fact.addParameter("DIGITS", mul.width2/mul.digit_size);
+      fact.addParameter("DIGITS", (mul.width2/mul.digit_size)+1);
       
       fact.addIO("clk", "input");
 			fact.addIO("rst", "input");
@@ -698,10 +698,12 @@ if (mul.name == "four_way_toom_cook") {
 			fact.addIO("c", "output reg", (mul.width1 + mul.width2));
       
       fact.addVar("local_rst", 1);
-      fact.addVar("mul_start", 1);
+      fact.addVar("digit_mul_start", 1);
+      fact.addVar("digit_mul_start_next", 1);
       fact.addVar("short_b", mul.digit_size);
+      fact.addVar("short_b_next", mul.digit_size);
       fact.addVar("counter_digits", mul.width2/mul.digit_size);
-      fact.addVar("next_counter_digits", mul.width2/mul.digit_size);
+      fact.addVar("counter_digits_next", mul.width2/mul.digit_size);
       fact.addVar("state", 2); 
       fact.addVar("next_state", 2);
       fact.addVar("next_c", (mul.width1+mul.width2));
@@ -709,8 +711,7 @@ if (mul.name == "four_way_toom_cook") {
       fact.addVar("upper_addr", (mul.width2/2)-1);
       fact.addVar("lower_addr", (mul.width2/2)-1);
       
-      fact.addWire("ready", 1);
-      fact.addWire("mul_done_tmp", 1);
+      fact.addWire("digit_mul_done", 1);
       fact.addWire("short_c", (mul.width1 + mul.digit_size));
       
 			//if (mul.pipeline > 1) {
@@ -734,7 +735,7 @@ if (mul.name == "four_way_toom_cook") {
       vlog << fact.getInternalDefinitionWire() << endl;
       
       vlog << "// Multiplier Instance" << endl;
-      vlog << "mult_unit #(" << mul.width2 << ", " << mul.digit_size << ") mult_unit (clk, rst, local_rst, a, short_b, mul_start, short_c, mul_done_tmp, ready);" << endl;
+      vlog << "mult_unit #(" << mul.width2 << ", " << mul.digit_size << ") mult_unit (clk, rst, local_rst, a, short_b, digit_mul_start, short_c, digit_mul_done);" << endl;
       
       // FSM Controller -- Sequential Block
       vlog << endl << "// FSM-controller --< Sequential Part" << endl;
@@ -749,7 +750,7 @@ if (mul.name == "four_way_toom_cook") {
       
       // multiplier inside the sbm_digitized
       vlog << endl << "// multiplier inside the sbm_digitized" << endl;
-      vlog << "module mult_unit(clk, rst, local_rst, a, b, mul_start, c, mul_done, ready);" << endl;
+      vlog << "module mult_unit(clk, rst, local_rst, a, b, digit_mul_start, c, digit_mul_done);" << endl;
       
       vlog << endl << "// Declaration of parameters" << endl;
       vlog << "parameter SHORTA = 1;" << endl;
@@ -761,10 +762,9 @@ if (mul.name == "four_way_toom_cook") {
       vlog << "input local_rst;" << endl;
       vlog << "input [" << (mul.width1-1) <<":0] a;" << endl;
       vlog << "input [" << (mul.digit_size-1) <<":0] b;" << endl;
-      vlog << "input mul_start;" << endl;
+      vlog << "input digit_mul_start;" << endl;
       vlog << "output reg [" << ((mul.width1 + mul.digit_size)-1) << ":0] c;" << endl;
-      vlog << "output reg mul_done;" << endl;
-      vlog << "output reg ready;" << endl;
+      vlog << "output reg digit_mul_done;" << endl;
       
       vlog << endl << "// Registers declaration " << endl;
       vlog << "reg [11:0] count;" << endl;

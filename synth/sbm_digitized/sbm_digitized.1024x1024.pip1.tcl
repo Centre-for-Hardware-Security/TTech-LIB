@@ -5,7 +5,7 @@ set_db syn_generic_effort express
 set_db syn_map_effort express
 set_db syn_opt_effort express
 set_db retime_verification_flow false
-set LIB {/export/designkits/tsmc/tsmc65/ip/msrflp/STDCELL/tcbn65lphvt_220a/FE/TSMCHOME/digital/Front_End/timing_power_noise/NLDM/tcbn65lphvt_220a/tcbn65lphvttc.lib}
+set LIB {your_lib_path.lib}
 set SOURCE_PATH {../../vlog/sbm_digitized/}
 set FILE_LIST {sbm_digitized.1024x1024.pip1.v}
 set_db init_hdl_search_path "$SOURCE_PATH"
@@ -19,7 +19,7 @@ time_info
 check_design -unresolved
 set_time_unit -nanoseconds
 set CLK_PORT_NAME clk
-create_clock -name "fast" -period 2.8 $CLK_PORT_NAME
+create_clock -name "fast" -period 3.86 $CLK_PORT_NAME
 #double check this input delay line
 set_input_delay -clock fast 0.001 [all_inputs]
 set_dont_use SDF*
