@@ -15,12 +15,12 @@ class VerilogFactory {
 		std::vector<int> _iowidths;
 
 		std::vector<std::string> _varnames;   // we used _varnames to keep registers names
-    std::vector<std::string> _varnames_1; // we used _varnames_1 to keep wires names
-    std::vector<std::string> _varnames_2; // we used _varnames_2 to keep parameter keyword in verilog
-    std::vector<std::string> _vartypes;   //
+    		std::vector<std::string> _varnames_1; // we used _varnames_1 to keep wires names
+		std::vector<std::string> _varnames_2; // we used _varnames_2 to keep parameter keyword in verilog
+		std::vector<std::string> _vartypes;   //
 		std::vector<int> _varwidths;          // we used _varwidths to set registers width
-    std::vector<int> _varwidths_1;        // we used _varwidths_1 to set wires width
-    std::vector<int> _varwidths_2;        // we used _varwidths_2 to set parameters width
+		std::vector<int> _varwidths_1;        // we used _varwidths_1 to set wires width
+		std::vector<int> _varwidths_2;        // we used _varwidths_2 to set parameters width
 
 	public:
 		VerilogFactory();
@@ -28,9 +28,9 @@ class VerilogFactory {
 		void addIO(const std::string name, const std::string direction);
 		void addIO(const std::string name, const std::string direction, int width);
 		void addVar(const std::string name, int width);      // include register
-    void addWire(const std::string name, int width);     // include wire
-    void addAssign(int width); 
-    void addParameter(const std::string name, int width);     // include parameter
+		void addWire(const std::string name, int width);     // include wire
+		void addAssign(int width); 
+		void addParameter(const std::string name, int width);     // include parameter
         
 		std::string getModuleDefinition();
 		std::string getIODefinition();
@@ -99,7 +99,8 @@ class VerilogFactory {
     std::string getMulLogic_sbm_digitized_FSM_combinational_logic(int width1, int width2, int digit_size, int pipeline);
     std::string getMulLogic_multiplier_inside_sbm_digitized(int width1, int width2, int digit_size, int pipeline);
     static std::string scoper(int level, std::string text);
-		std::map<int, std::string> snippet;
+	
+	std::map<int, std::string> snippet;
 		enum {
 			ALWAYS, 
 			RESET0,

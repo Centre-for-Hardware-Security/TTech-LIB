@@ -182,7 +182,7 @@ void genMultipliers() {
 			vlog << fact.getTempVars(mul.pipeline) << endl; // pipelined inputs are declared here
 			vlog << fact.snippet[VerilogFactory::ALWAYS] << endl;
 			vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::RESET1]) << endl;
-			vlog << fact.getResetStatement();
+			vlog << VerilogFactory::scoper(2, fact.getResetStatement());
 			vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::END]) << endl;
 			vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::ELSEBEGIN]) << endl;
 			vlog << VerilogFactory::scoper(2, fact.getMulLogicSimple(mul.pipeline)) << endl;		

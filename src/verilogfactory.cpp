@@ -343,7 +343,7 @@ std::string VerilogFactory::getResetStatement() {
 
 	while (i != _ionames.end()) {
 		if ((*j) == "output reg") {
-			tmp = tmp + scoper(2, *i + " <= " + std::to_string(*k) + "\'d0;\n");
+			tmp = tmp + *i + " <= " + std::to_string(*k) + "\'d0;\n";
 		}
 
 		i++;
