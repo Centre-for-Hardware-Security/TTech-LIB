@@ -85,7 +85,7 @@ void readConfig() {
 
 		child = root->FirstChildElement( "WIDTH1" ); // there can be many
 		child2 = root->FirstChildElement( "WIDTH2" ); // there can be many
-    child3 = root->FirstChildElement( "DIGIT_SIZE" ); // there can be many
+  		child3 = root->FirstChildElement( "DIGIT_SIZE" ); // there can be many
 		child4 = root->FirstChildElement( "CLOCK" ); // there can be many
 		child5 = root->FirstChildElement( "PIPELINE" ); // there can be many
 		if (!child) {
@@ -100,7 +100,7 @@ void readConfig() {
 			cout << "error reading XML child DIGIT_SIZE" << endl;
 			return;
 		}
-    if (!child4) {
+    		if (!child4) {
 			cout << "error reading XML child CLOCK" << endl;
 			return;
 		}
@@ -110,14 +110,14 @@ void readConfig() {
 		}
 
 		while (child) {
-			cout << "mul: " << temp << " width1: " << child->GetText() << "width2: " << child2->GetText() << "digit_size: " << child3->GetText() << " freq: " << child4->GetText() << " stages: " << child5->GetText() << endl;
+			cout << "mul: " << temp << " width1: " << child->GetText() << " width2: " << child2->GetText() << " digit_size: " << child3->GetText() << " freq: " << child4->GetText() << " stages: " << child5->GetText() << endl;
 
 			struct st_mul mul = {temp, atoi(child->GetText()), atoi(child2->GetText()), atoi(child3->GetText()), stod(child4->GetText()), atoi(child5->GetText())};
 			muls.push_back(mul);
 			child = child->NextSiblingElement("WIDTH1");
 			child2 = child2->NextSiblingElement("WIDTH2");
 			child3 = child3->NextSiblingElement("DIGIT_SIZE");
-      child4 = child4->NextSiblingElement("CLOCK");
+     			child4 = child4->NextSiblingElement("CLOCK");
 			child5 = child5->NextSiblingElement("PIPELINE");
 		}
 
@@ -162,7 +162,7 @@ void genMultipliers() {
 			return;
 		}
 
-		vlog << "// TalTech large multiplier library" << endl;
+		vlog << "// TalTech large integer multiplier library" << endl;
 		vlog << "// Multiplier type: " << mul.name << endl;
 		vlog << "// Parameters: " << mul.width1 << " " << mul.width2 << " " << mul.pipeline << endl;
 		vlog << "// Target tool: " << target << endl;
@@ -185,7 +185,7 @@ void genMultipliers() {
 			vlog << fact.getResetStatement();
 			vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::END]) << endl;
 			vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::ELSEBEGIN]) << endl;
-			vlog << fact.getMulLogicSimple(mul.pipeline) << endl;		
+			vlog << VerilogFactory::scoper(2, fact.getMulLogicSimple(mul.pipeline)) << endl;		
 			vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::END]) << endl;
 			vlog << fact.snippet[VerilogFactory::END] << endl;
 			vlog << fact.snippet[VerilogFactory::ENDMODULE] << endl;
@@ -220,10 +220,10 @@ void genMultipliers() {
 		if (mul.name == "two_way_karatsuba") {
       
    		fact.addIO("clk", "input");
-			fact.addIO("rst", "input");
-			fact.addIO("a", "input", mul.width1);
-			fact.addIO("b", "input", mul.width2);
-			fact.addIO("c", "output reg", mul.width1 + mul.width2);
+		fact.addIO("rst", "input");
+		fact.addIO("a", "input", mul.width1);
+		fact.addIO("b", "input", mul.width2);
+		fact.addIO("c", "output reg", mul.width1 + mul.width2);
 			
       // To declare wires in the generated verilog file
       fact.addWire("a1", mul.width1/2); // include wire
@@ -254,8 +254,8 @@ void genMultipliers() {
 			//vlog << fact.getTempVars(mul.pipeline) << endl; // pipelined inputs are declared here
       vlog << "// Wires declaration " << endl;
       vlog << fact.getInternalDefinitionWire() << endl;
-      vlog << "// Registers declaration " << endl;
-			vlog << fact.getInternalDefinition() << endl; // pipelined inputs are declared here
+	vlog << "// Registers declaration " << endl;
+	vlog << fact.getInternalDefinition() << endl; // pipelined inputs are declared here
 			
       // Initial assignments
       vlog << "// Initializations / initial assignments" << endl;
