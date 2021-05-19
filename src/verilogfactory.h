@@ -1,10 +1,11 @@
 #ifndef VERILOGFACTORY_H
 #define VERILOGFACTORY_H
 
+#include <sstream>
 #include <string>
 #include <vector>
 #include <map>
-
+#include <iostream>
 
 class VerilogFactory {
 	private:
@@ -98,7 +99,8 @@ class VerilogFactory {
     std::string getMulLogic_sbm_digitized_FSM_sequential_logic(int width1, int width2, int digit_size, int pipeline);
     std::string getMulLogic_sbm_digitized_FSM_combinational_logic(int width1, int width2, int digit_size, int pipeline);
     std::string getMulLogic_multiplier_inside_sbm_digitized(int width1, int width2, int digit_size, int pipeline);
-    static std::string scoper(int level, std::string text);
+
+	static std::string scoper(const int level, const std::string text);
 	
 	std::map<int, std::string> snippet;
 		enum {

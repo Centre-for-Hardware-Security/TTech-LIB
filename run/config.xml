@@ -6,6 +6,7 @@
 	<!-- use only one target at a time-->
 	<TARGET>genus</TARGET>
 	<LIB>/export/designkits/tsmc/tsmc65/ip/msrflp/STDCELL/tcbn65lphvt_220a/FE/TSMCHOME/digital/Front_End/timing_power_noise/NLDM/tcbn65lphvt_220a/tcbn65lphvttc.lib</LIB>
+	<EFFORT>express</EFFORT>
 
 	<TARGET>dc</TARGET>
 	<LIBFOLDER>/export/designkits/tsmc/tsmc65/ip/msrflp/STDCELL/tcbn65lphvt_220a/FE/TSMCHOME/digital/Front_End/timing_power_noise/NLDM/tcbn65lphvt_220a/</LIBFOLDER>
@@ -34,6 +35,6 @@
 	<WIDTH2>100</WIDTH2>
   	<DIGIT_SIZE>1</DIGIT_SIZE>
 	<CLOCK>1</CLOCK>
-	<PIPELINE>1</PIPELINE>
+	<PIPELINE>3</PIPELINE>
 </MUL>
 

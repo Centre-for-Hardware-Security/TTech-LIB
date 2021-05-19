@@ -18,13 +18,14 @@ int cores;
 string target;
 string libfolder;
 string lib;
+string effort;
 
 // multiplier configs
 struct st_mul {
 	string name;
 	int width1;
 	int width2;
-  int digit_size;
+	int digit_size;
 	double freq;
 	int pipeline;
 };
@@ -71,6 +72,8 @@ void readConfig() {
 	libfolder = child->GetText();
 	child = root->FirstChildElement( "LIB" );
 	lib = child->GetText();
+	child = root->FirstChildElement( "EFFORT" );
+	effort = child->GetText();
 
 	// reads multiplier specific stuff
 	root = doc.FirstChildElement( "MUL" );
@@ -182,7 +185,7 @@ void genMultipliers() {
 			vlog << fact.getTempVars(mul.pipeline) << endl; // pipelined inputs are declared here
 			vlog << fact.snippet[VerilogFactory::ALWAYS] << endl;
 			vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::RESET1]) << endl;
-			vlog << VerilogFactory::scoper(2, fact.getResetStatement());
+			vlog << VerilogFactory::scoper(2, fact.getResetStatement()) << endl;
 			vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::END]) << endl;
 			vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::ELSEBEGIN]) << endl;
 			vlog << VerilogFactory::scoper(2, fact.getMulLogicSimple(mul.pipeline)) << endl;		
@@ -789,10 +792,10 @@ void genScripts() {
 		if (target == "genus") {
 			tcl << "#created by TMlib" << endl;
 			tcl << "set_db information_level 99" << endl;
-			tcl << "set_db syn_global_effort express" << endl;
-			tcl << "set_db syn_generic_effort express" << endl;
-			tcl << "set_db syn_map_effort express" << endl;
-			tcl << "set_db syn_opt_effort express" << endl;
+			tcl << "set_db syn_global_effort " << effort << endl;
+			tcl << "set_db syn_generic_effort " << effort << endl;
+			tcl << "set_db syn_map_effort " << effort << endl;
+			tcl << "set_db syn_opt_effort " << effort << endl;
 			tcl << "set_db retime_verification_flow false" << endl;
 
 			tcl << "set LIB {" << lib << "}" << endl;
@@ -811,7 +814,7 @@ void genScripts() {
 			tcl << "set_time_unit -nanoseconds" << endl;
 			tcl << "set CLK_PORT_NAME clk" << endl;
 			tcl << "create_clock -name \"fast\" -period " << mul.freq << " $CLK_PORT_NAME" << endl;
-			tcl << "#double check this input delay line" << endl;
+			//tcl << "#double check this input delay line" << endl;
 			tcl << "set_input_delay -clock fast 0.001 [all_inputs]" << endl;
 
 			tcl << "set_dont_use SDF*" << endl;

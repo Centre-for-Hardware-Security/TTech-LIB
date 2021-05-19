@@ -355,7 +355,7 @@ std::string VerilogFactory::getResetStatement() {
 	k = _varwidths.begin();
 
 	while (i != _varnames.end()) {
-		tmp = tmp + scoper(2, *i + " <= " + std::to_string(*k) + "\'d0;\n");
+		tmp = tmp + *i + " <= " + std::to_string(*k) + "\'d0;\n";
 
 		i++;
 		k++;
@@ -418,10 +418,10 @@ std::string VerilogFactory::getMulLogicSimple(int pipeline) {
 		while (i != _ionames.end()) {
 			if (((*j) == "input") && ((*k) == "regular")) {
 				if (times == 1) { // first time we assign from input to temp
-					tmp = tmp + scoper(2, *i + "_temp_" + std::to_string(times) + " <= " + *i + ";\n");
+					tmp = tmp + *i + "_temp_" + std::to_string(times) + " <= " + *i + ";\n";
 				}
 				else {
-					tmp = tmp + scoper(2, *i + "_temp_" + std::to_string(times) + " <= " + *i + "_temp_" + std::to_string(times-1) + ";\n");
+					tmp = tmp + *i + "_temp_" + std::to_string(times) + " <= " + *i + "_temp_" + std::to_string(times-1) + ";\n";
 				}
 			}
 	
@@ -441,7 +441,7 @@ std::string VerilogFactory::getMulLogicSimple(int pipeline) {
 	}
 
 	times = pipeline - 1;
-	tmp = tmp + scoper(2, "c <= a_temp_" + std::to_string(times) + " * b_temp_" + std::to_string(times) + ";\n");
+	tmp = tmp + "c <= a_temp_" + std::to_string(times) + " * b_temp_" + std::to_string(times) + ";\n";
 
 	return tmp;
 }
@@ -1379,16 +1379,31 @@ std::string VerilogFactory::getMulLogic_multiplier_inside_sbm_digitized(int widt
    }
 }
 
-std::string VerilogFactory::scoper(int level, std::string text) {
+std::string VerilogFactory::scoper(const int level, const std::string text) {
+	std::stringstream input(text);
+	std::stringstream output;
 	int i = 0;
-	std::string tmp;	
 
+	std::string tmp; // one string that has as many tabs as needed
 	while (i!= level) {
 		tmp = tmp + "\t";
 		i++;
 	}
-
-	tmp = tmp + text;
-	return tmp;
+	
+	std::string to;
+	bool again = false;
+	while (std::getline(input,to,'\n')) {
+		if (again) {
+			output << std::endl;
+			output << tmp << to;
+		}
+		else {
+			again = true;
+			output << tmp << to;
+		}
+	}
+	
+	return output.str();
 }
+
 
