@@ -826,18 +826,16 @@ void genScripts() {
 			tcl << "set_dont_use *DCAP*" << endl;
 
 			if (mul.pipeline > 1) {
-				tcl << "retime -prepare -effort low" << endl;
+				tcl << "retime -prepare" << endl;
 				tcl << "time_info" << endl;
 				tcl << "retime -min_delay" << endl;
 				tcl << "time_info" << endl;
 			}
-			else {
-				tcl << "syn_generic" << endl;
-				tcl << "time_info" << endl;
-				tcl << "syn_map" << endl;
-				tcl << "time_info" << endl;
-			}
-			
+
+			tcl << "syn_generic" << endl;
+			tcl << "time_info" << endl;
+			tcl << "syn_map" << endl;
+			tcl << "time_info" << endl;
 			tcl << "syn_opt" << endl;
 			tcl << "time_info" << endl;
 	
