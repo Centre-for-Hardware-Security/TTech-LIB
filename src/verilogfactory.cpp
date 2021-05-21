@@ -334,7 +334,7 @@ std::string VerilogFactory::getInternalDefinitionAssignSetLSB_as_m_times_3_over_
   return tmp;
 }
 
-std::string VerilogFactory::getResetStatement() {
+std::string VerilogFactory::getResetStatement(bool partial) {
 	std::string tmp;
 
 	auto i = _ionames.begin();
@@ -350,6 +350,8 @@ std::string VerilogFactory::getResetStatement() {
 		j++;
 		k++;
 	}
+
+	if (partial) return tmp; // this hsould be enough to prevent reseting all regs.
 
 	i = _varnames.begin();
 	k = _varwidths.begin();
@@ -451,10 +453,10 @@ std::string VerilogFactory::getMulLogicSchoolbook(int width1, int width2, int pi
 
 	if (pipeline == 1) {
 		tmp = "if (count < " + std::to_string(width1) + ") begin\n";
-		tmp = tmp + "if (b[count] == 1) begin\n";
-		tmp = tmp + "c <= c + (a << count);\n";
-		tmp = tmp + "end\n";
-		tmp = tmp + "count <= count + 1;\n";
+		tmp = tmp + "\tif (b[count] == 1) begin\n";
+		tmp = tmp + "\t\tc <= c + (a << count);\n";
+		tmp = tmp + "\tend\n";
+		tmp = tmp + "\tcount <= count + 1;\n";
 		tmp = tmp + "end\n";
 		return tmp; // no pipelining version
 	}
@@ -470,10 +472,10 @@ std::string VerilogFactory::getMulLogicSchoolbook(int width1, int width2, int pi
 		while (i != _ionames.end()) {
 			if (((*j) == "input") && ((*k) == "regular")) {
 				if (times == 1) { // first time we assign from input to temp
-					tmp = tmp + scoper(2, *i + "_temp_" + std::to_string(times) + " <= " + *i + ";\n");
+					tmp = tmp + *i + "_temp_" + std::to_string(times) + " <= " + *i + ";\n";
 				}
 				else {
-					tmp = tmp + scoper(2, *i + "_temp_" + std::to_string(times) + " <= " + *i + "_temp_" + std::to_string(times-1) + ";\n");
+					tmp = tmp + *i + "_temp_" + std::to_string(times) + " <= " + *i + "_temp_" + std::to_string(times-1) + ";\n";
 				}
 			}
 	
@@ -494,15 +496,15 @@ std::string VerilogFactory::getMulLogicSchoolbook(int width1, int width2, int pi
 	std::string var1 = "a_temp_" + std::to_string(times);
 	std::string var2 = "b_temp_" + std::to_string(times);
 
-	tmp = tmp + scoper(2, "if (skip != " + std::to_string(pipeline -1) + ") skip <= skip + 1;\n");
-	tmp = tmp + scoper(2, "else begin\n");
-	tmp = tmp + scoper(3, "if (count < " + std::to_string(width1) + ") begin\n");
-	tmp = tmp + scoper(4, "if (" + var2 + "[count] == 1) begin\n");
-	tmp = tmp + scoper(5, "c <= c + (" + var1 + " << count);\n");
-	tmp = tmp + scoper(4, "end\n");
-	tmp = tmp + scoper(4, "count <= count + 1;\n");
-	tmp = tmp + scoper(3, "end\n");
-	tmp = tmp + scoper(2, "end\n");
+	tmp = tmp + "if (skip != " + std::to_string(pipeline -1) + ") skip <= skip + 1;\n";
+	tmp = tmp + "else begin\n";
+	tmp = tmp + "\tif (count < " + std::to_string(width1) + ") begin\n";
+	tmp = tmp + "\t\tif (" + var2 + "[count] == 1) begin\n";
+	tmp = tmp + "\t\t\tc <= c + (" + var1 + " << count);\n";
+	tmp = tmp + "\t\tend\n";
+	tmp = tmp + "\t\tcount <= count + 1;\n";
+	tmp = tmp + "\tend\n";
+	tmp = tmp + "end\n";
 
 	return tmp;
 }

@@ -55,7 +55,7 @@ class VerilogFactory {
     std::string getInternalDefinitionAssignSetLSB_as_m_times_2_over_4();
     std::string getInternalDefinitionAssignSetLSB_as_m_times_3_over_4();
     std::string getTempVars(int pipeline);
-		std::string getResetStatement();
+		std::string getResetStatement(bool partial);
 		std::string getMulLogicSimple(int pipeline);
 		std::string getMulLogicSchoolbook(int width1, int width2, int pipeline);
     std::string getMulLogic_2_Way_Karatsuba_Step_1(int width1, int width2, int pipeline);
