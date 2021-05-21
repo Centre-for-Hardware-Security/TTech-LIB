@@ -6,7 +6,7 @@
 	<!-- use only one target at a time-->
 	<TARGET>genus</TARGET>
 	<LIB>/export/designkits/tsmc/tsmc65/ip/msrflp/STDCELL/tcbn65lphvt_220a/FE/TSMCHOME/digital/Front_End/timing_power_noise/NLDM/tcbn65lphvt_220a/tcbn65lphvttc.lib</LIB>
-	<EFFORT>express</EFFORT>
+	<EFFORT>high</EFFORT>
 
 	<TARGET>dc</TARGET>
 	<LIBFOLDER>/export/designkits/tsmc/tsmc65/ip/msrflp/STDCELL/tcbn65lphvt_220a/FE/TSMCHOME/digital/Front_End/timing_power_noise/NLDM/tcbn65lphvt_220a/</LIBFOLDER>
@@ -15,6 +15,7 @@
 </CONFIG>
 <MUL>
 	<NAME>two_way_karatsuba</NAME>
+	<RESET>posedge</RESET>
 	<WIDTH1>571</WIDTH1>
 	<WIDTH2>571</WIDTH2>
   	<DIGIT_SIZE>1</DIGIT_SIZE>
@@ -24,17 +25,48 @@
 	<!-- other samples given below -->
 <MUL>
 	<NAME>simple</NAME>
+	<RESET>no</RESET>
 	<WIDTH1>2</WIDTH1>
 	<WIDTH2>10</WIDTH2>
   	<DIGIT_SIZE>1</DIGIT_SIZE>
 	<CLOCK>1</CLOCK>
 	<PIPELINE>1</PIPELINE>
+</MUL>
 
+<MUL>
 	<NAME>simple</NAME>
+	<RESET>no</RESET>
+	<WIDTH1>201</WIDTH1>
+	<WIDTH2>202</WIDTH2>
+  	<DIGIT_SIZE>1</DIGIT_SIZE>
+	<CLOCK>0.60</CLOCK>
+	<PIPELINE>4</PIPELINE>
+</MUL>
+<MUL>
+	<NAME>simple</NAME>
+	<RESET>no</RESET>
 	<WIDTH1>20</WIDTH1>
 	<WIDTH2>100</WIDTH2>
   	<DIGIT_SIZE>1</DIGIT_SIZE>
-	<CLOCK>1</CLOCK>
+	<CLOCK>0.60</CLOCK>
+	<PIPELINE>4</PIPELINE>
+</MUL>
+<MUL>
+	<NAME>simple</NAME>
+	<RESET>no</RESET>
+	<WIDTH1>20</WIDTH1>
+	<WIDTH2>100</WIDTH2>
+  	<DIGIT_SIZE>1</DIGIT_SIZE>
+	<CLOCK>0.67</CLOCK>
 	<PIPELINE>3</PIPELINE>
+</MUL>
+<MUL>
+	<NAME>simple</NAME>
+	<RESET>no</RESET>
+	<WIDTH1>20</WIDTH1>
+	<WIDTH2>100</WIDTH2>
+  	<DIGIT_SIZE>1</DIGIT_SIZE>
+	<CLOCK>0.76</CLOCK>
+	<PIPELINE>2</PIPELINE>
 </MUL>
 

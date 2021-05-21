@@ -23,10 +23,11 @@ string effort;
 // multiplier configs
 struct st_mul {
 	string name;
+	string reset;
 	int width1;
 	int width2;
-	int digit_size;
 	double freq;
+	int digit_size = 1;
 	int pipeline;
 };
 
@@ -56,7 +57,7 @@ void readConfig() {
 	cout << "Starting the tool, reading config.xml" << endl; 
 
 	// reads tool configuration related stuff
-	tinyxml2::XMLElement *root, *child, *child2, *child3, *child4, *child5;
+	tinyxml2::XMLElement *root, *child, *child1, *child2, *child3, *child4, *child5, *child6;
 	root = doc.FirstChildElement( "CONFIG" );
 	if (!root) {
 		cout << "error reading XML CONFIG root" << endl;
@@ -79,51 +80,46 @@ void readConfig() {
 	root = doc.FirstChildElement( "MUL" );
 
 	while (root) {
+		string temp; // will store the name
 		child= root->FirstChildElement( "NAME" ); // there can be only one
 		if (!child) {
-			cout << "error reading XML child NAME" << endl;
+			cout << "ERROR: NAME tag missing for multiplier" << endl; // this is mandatory, abort if name is not found
 			return;
 		}
-		string temp = child->GetText();
+		temp = child->GetText();
 
-		child = root->FirstChildElement( "WIDTH1" ); // there can be many
-		child2 = root->FirstChildElement( "WIDTH2" ); // there can be many
-  		child3 = root->FirstChildElement( "DIGIT_SIZE" ); // there can be many
-		child4 = root->FirstChildElement( "CLOCK" ); // there can be many
-		child5 = root->FirstChildElement( "PIPELINE" ); // there can be many
-		if (!child) {
-			cout << "error reading XML child WIDTH1" << endl;
+		child1 = root->FirstChildElement( "RESET" ); 
+		if (!child1) {
+			cout << "ERROR: RESET tag missing for multiplier " << temp << endl;
 			return;
 		}
+
+		child2 = root->FirstChildElement( "WIDTH1" );
 		if (!child2) {
-			cout << "error reading XML child WIDTH2" << endl;
+			cout << "ERROR: WIDTH1 tag missing for multiplier " << temp << endl;
 			return;
 		}
+
+		child3 = root->FirstChildElement( "WIDTH2" );
 		if (!child3) {
-			cout << "error reading XML child DIGIT_SIZE" << endl;
-			return;
-		}
-    		if (!child4) {
-			cout << "error reading XML child CLOCK" << endl;
-			return;
-		}
-		if (!child5) {
-			cout << "error reading XML child PIPELINE" << endl;
+			cout << "ERROR: WIDTH2 tag missing for multiplier " << temp << endl;
 			return;
 		}
 
-		while (child) {
-			cout << "mul: " << temp << " width1: " << child->GetText() << " width2: " << child2->GetText() << " digit_size: " << child3->GetText() << " freq: " << child4->GetText() << " stages: " << child5->GetText() << endl;
-
-			struct st_mul mul = {temp, atoi(child->GetText()), atoi(child2->GetText()), atoi(child3->GetText()), stod(child4->GetText()), atoi(child5->GetText())};
-			muls.push_back(mul);
-			child = child->NextSiblingElement("WIDTH1");
-			child2 = child2->NextSiblingElement("WIDTH2");
-			child3 = child3->NextSiblingElement("DIGIT_SIZE");
-     			child4 = child4->NextSiblingElement("CLOCK");
-			child5 = child5->NextSiblingElement("PIPELINE");
+		child4 = root->FirstChildElement( "CLOCK" ); 
+		if (!child4) {
+			cout << "ERROR: CLOCK tag missing for multiplier " << temp << endl;
+			return;
 		}
 
+  		child5 = root->FirstChildElement( "DIGIT_SIZE" ); // optional
+		child6 = root->FirstChildElement( "PIPELINE" ); // optional
+	
+		cout << "mul: " << temp << " width1: " << child2->GetText() << " width2: " << child3->GetText() << " freq: " << child4->GetText() << " digit_size: " << child5->GetText() << " stages: " << child6->GetText() << endl;
+
+		struct st_mul mul = {temp, child1->GetText(), atoi(child2->GetText()), atoi(child3->GetText()), stod(child4->GetText()), atoi(child5->GetText()), atoi(child6->GetText())};
+		muls.push_back(mul);
+		
 		root = root->NextSiblingElement("MUL");
 	}
 }
