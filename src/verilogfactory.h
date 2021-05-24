@@ -15,11 +15,12 @@ class VerilogFactory {
 		std::vector<std::string> _iotypes;
 		std::vector<int> _iowidths;
 
-		std::vector<std::string> _varnames;   // we used _varnames to keep registers names
+		std::vector<std::string> _varnames;   	// we used _varnames to keep registers names
+		std::vector<int> _varwidths;    	// we used _varwidths to set registers width
+		std::vector<bool> _varpipes;   		// we used _varpipes to track pipeline registers
+
     		std::vector<std::string> _varnames_1; // we used _varnames_1 to keep wires names
 		std::vector<std::string> _varnames_2; // we used _varnames_2 to keep parameter keyword in verilog
-		std::vector<std::string> _vartypes;   //
-		std::vector<int> _varwidths;          // we used _varwidths to set registers width
 		std::vector<int> _varwidths_1;        // we used _varwidths_1 to set wires width
 		std::vector<int> _varwidths_2;        // we used _varwidths_2 to set parameters width
 
@@ -28,10 +29,12 @@ class VerilogFactory {
 		void setName(const std::string name);
 		void addIO(const std::string name, const std::string direction);
 		void addIO(const std::string name, const std::string direction, int width);
-		void addVar(const std::string name, int width);      // include register
+		void addVar(const std::string name, int width, bool pipeline);      // include register
 		void addWire(const std::string name, int width);     // include wire
 		void addAssign(int width); 
 		void addParameter(const std::string name, int width);     // include parameter
+
+		void genTempVars(int pipeline);
         
 		std::string getModuleDefinition();
 		std::string getIODefinition();

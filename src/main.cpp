@@ -182,6 +182,8 @@ void genMultipliers() {
 			fact.addIO("b", "input", mul.width2);
 			fact.addIO("c", "output reg", mul.width1 + mul.width2);
 
+			fact.genTempVars(mul.pipeline);
+
 			vlog << fact.getModuleDefinition() << endl;
 			vlog << fact.getIODefinition() << endl;
 			vlog << fact.getTempVars(mul.pipeline) << endl; // pipelined inputs are declared here
@@ -194,7 +196,7 @@ void genMultipliers() {
 				if (mul.reset == "negedge") {
 					vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::RESET0]) << endl;
 				}
-				vlog << VerilogFactory::scoper(2, fact.getResetStatement(false)) << endl;
+				vlog << VerilogFactory::scoper(2, fact.getResetStatement(true)) << endl;
 				vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::END]) << endl;
 				vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::ELSEBEGIN]) << endl;
 				vlog << VerilogFactory::scoper(2, fact.getMulLogicSimple(mul.pipeline)) << endl;
@@ -214,63 +216,63 @@ void genMultipliers() {
 			fact.addIO("a", "input", mul.width1);
 			fact.addIO("b", "input", mul.width2);
 			fact.addIO("c", "output reg", mul.width1 + mul.width2);
-			fact.addVar("count", log2(mul.width1) + 1); // TODO: check this is really width1
+			fact.addVar("count", log2(mul.width1) + 1, false); // TODO: check this is really width1
 			if (mul.pipeline > 1) {
-				fact.addVar("skip", log2(mul.pipeline - 1) + 1);
+				fact.addVar("skip", log2(mul.pipeline - 1) + 1, false);
 			}
+
+			fact.genTempVars(mul.pipeline);
 
 			vlog << fact.getModuleDefinition() << endl;
 			vlog << fact.getIODefinition() << endl;
-			vlog << fact.getTempVars(mul.pipeline) << endl; // pipelined inputs are declared here
-			vlog << fact.getInternalDefinition() << endl; // pipelined inputs are declared here
+			vlog << fact.getTempVars(mul.pipeline) << endl; // pipelined regs are declared here
+			vlog << fact.getInternalDefinition() << endl; // internal variables are declared here
 			vlog << fact.snippet[VerilogFactory::ALWAYS] << endl;
 
 			if (mul.reset == "posedge") {
 				vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::RESET1]) << endl;
 			}
-			if (mul.reset == "negedge") {
+			else { // the none case will fall here, which is ok
 				vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::RESET0]) << endl;
 			}
 			
 			if (mul.reset == "none") { // note there will always be a reset for schoolbook because the counters have to be managed. so here the user only decides the behavior of the reset for the pipeline registers
-				vlog << VerilogFactory::scoper(2, fact.getResetStatement(true)) << endl;
+				vlog << VerilogFactory::scoper(2, fact.getResetStatement(false)) << endl;
 			}
 			else {
-				vlog << VerilogFactory::scoper(2, fact.getResetStatement(false)) << endl;
+				vlog << VerilogFactory::scoper(2, fact.getResetStatement(true)) << endl;
 			}
 			
 			vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::END]) << endl;
 			vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::ELSEBEGIN]) << endl;
 			vlog << VerilogFactory::scoper(2, fact.getMulLogicSchoolbook(mul.width1, mul.width2, mul.pipeline)) << endl;
-			vlog << VerilogFactory::scoper(1, fact.getMulLogicSchoolbook(mul.width1, mul.width2, mul.pipeline)) << endl;
 			vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::END]) << endl;
 			vlog << fact.snippet[VerilogFactory::END] << endl;
 			vlog << fact.snippet[VerilogFactory::ENDMODULE] << endl;
 		}
 
 		if (mul.name == "two_way_karatsuba") {
-      
-   		fact.addIO("clk", "input");
-		fact.addIO("rst", "input");
-		fact.addIO("a", "input", mul.width1);
-		fact.addIO("b", "input", mul.width2);
-		fact.addIO("c", "output reg", mul.width1 + mul.width2);
+   			fact.addIO("clk", "input");
+			fact.addIO("rst", "input");
+			fact.addIO("a", "input", mul.width1);
+			fact.addIO("b", "input", mul.width2);
+			fact.addIO("c", "output reg", mul.width1 + mul.width2);
 			
-      // To declare wires in the generated verilog file
-      fact.addWire("a1", mul.width1/2); // include wire
-      fact.addWire("b1", mul.width1/2); // include wire
-      fact.addWire("c1", mul.width1/2); // include wire
-      fact.addWire("d1", mul.width1/2); // include wire
-      fact.addWire("sum_a1b1", (mul.width1/2)+1); // include wire
-      fact.addWire("sum_c1d1", (mul.width1/2)+1); // include wire
-            
-      // To declare reg in the generated verilog file
-      fact.addVar("counter_a1c1", mul.width1/2); // will check 2 bits of a1
-      fact.addVar("counter_b1d1", mul.width1/2); // will check 2 bits of b1
-      fact.addVar("counter_sum_a1b1_c1d1", (mul.width1/2)+2); //will check 3 bits
-      fact.addVar("mul_a1c1", mul.width1); // register to store multiplication result of a1 and c1 and its width will be sum of widths of a1 and c1
-      fact.addVar("mul_b1d1", mul.width1); 
-      fact.addVar("mul_sum_a1b1_sum_c1d1", mul.width1 + 2); 
+			// To declare wires in the generated verilog file
+			fact.addWire("a1", mul.width1/2); // include wire
+			fact.addWire("b1", mul.width1/2); // include wire
+			fact.addWire("c1", mul.width1/2); // include wire
+			fact.addWire("d1", mul.width1/2); // include wire
+      			fact.addWire("sum_a1b1", (mul.width1/2)+1); // include wire
+      			fact.addWire("sum_c1d1", (mul.width1/2)+1); // include wire
+      			      
+      			// To declare reg in the generated verilog file
+      			fact.addVar("counter_a1c1", mul.width1/2, false); // will check 2 bits of a1
+      			fact.addVar("counter_b1d1", mul.width1/2, false); // will check 2 bits of b1
+      			fact.addVar("counter_sum_a1b1_c1d1", (mul.width1/2)+2, false); //will check 3 bits
+      			fact.addVar("mul_a1c1", mul.width1, false); // register to store multiplication result of a1 and c1 and its width will be sum of widths of a1 and c1
+      			fact.addVar("mul_b1d1", mul.width1, false); 
+      			fact.addVar("mul_sum_a1b1_sum_c1d1", mul.width1 + 2, false); 
       
       //fact.getAssignonWire(); // first parameter towards left is the destination while another parameter towards right is the source to be copied 
              
@@ -280,47 +282,42 @@ void genMultipliers() {
 			}
       */
       
-      vlog << fact.getModuleDefinition() << endl;
+			vlog << fact.getModuleDefinition() << endl;
 			vlog << fact.getIODefinition() << endl;
 			//vlog << fact.getTempVars(mul.pipeline) << endl; // pipelined inputs are declared here
-      vlog << "// Wires declaration " << endl;
-      vlog << fact.getInternalDefinitionWire() << endl;
-	vlog << "// Registers declaration " << endl;
-	vlog << fact.getInternalDefinition() << endl; // pipelined inputs are declared here
+			vlog << "// Wires declaration " << endl;
+			vlog << fact.getInternalDefinitionWire() << endl;
+			vlog << "// Registers declaration " << endl;
+			vlog << fact.getInternalDefinition() << endl; // pipelined inputs are declared here
 			
-      // Initial assignments
-      vlog << "// Initializations / initial assignments" << endl;
-      vlog << "assign a1 = a[" << fact.getInternalDefinitionAssignSetMSB_as_m_minus_1() << ":" << fact.getInternalDefinitionAssignSetLSB_as_m_over_2() << "];" << endl;
-      vlog << "assign b1 = a[" << fact.getInternalDefinitionAssignSetMSB_as_m_over_2_minus_1() << ":0];" << endl;
-      vlog << "assign c1 = b[" << fact.getInternalDefinitionAssignSetMSB_as_m_minus_1() << ":" << fact.getInternalDefinitionAssignSetLSB_as_m_over_2() << "];" << endl;
-      vlog << "assign d1 = b[" << fact.getInternalDefinitionAssignSetMSB_as_m_over_2_minus_1() << ":0];" << endl << endl;
-      
-      // Step_1
-      vlog << "// Step-1 of 2-Way Karatsuba Multiplier" << endl;
-      vlog << fact.snippet[VerilogFactory::ALWAYS] << endl;
-			//vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::RESET1]) << endl;
-			//vlog << fact.getResetStatement();
-			//vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::END]) << endl;
-			//vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::ELSEBEGIN]) << endl;
-			vlog << fact.getMulLogic_2_Way_Karatsuba_Step_1(mul.width1, mul.width2, mul.pipeline) << endl;		
-			//vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::END]) << endl;
+			// Initial assignments
+			vlog << "// breaking the inputs into 4 parts of equal length" << endl;
+			vlog << "assign a1 = a[" << fact.getInternalDefinitionAssignSetMSB_as_m_minus_1() << ":" << fact.getInternalDefinitionAssignSetLSB_as_m_over_2() << "];" << endl;
+			vlog << "assign b1 = a[" << fact.getInternalDefinitionAssignSetMSB_as_m_over_2_minus_1() << ":0];" << endl;
+			vlog << "assign c1 = b[" << fact.getInternalDefinitionAssignSetMSB_as_m_minus_1() << ":" << fact.getInternalDefinitionAssignSetLSB_as_m_over_2() << "];" << endl;
+			vlog << "assign d1 = b[" << fact.getInternalDefinitionAssignSetMSB_as_m_over_2_minus_1() << ":0];" << endl << endl;
+						      
+			// Step_1
+			vlog << "// Step-1 of 2-Way Karatsuba Multiplier" << endl;
+			vlog << fact.snippet[VerilogFactory::ALWAYS] << endl;
+			vlog << VerilogFactory::scoper(1, fact.getMulLogic_2_Way_Karatsuba_Step_1(mul.width1, mul.width2, mul.pipeline)) << endl;
 			vlog << fact.snippet[VerilogFactory::END] << endl;
       
-      // Step_2
-      vlog << endl << "// Step-2 of 2-Way Karatsuba Multiplier" << endl;
-      vlog << fact.snippet[VerilogFactory::ALWAYS] << endl;
-      vlog << fact.getMulLogic_2_Way_Karatsuba_Step_2(mul.width1, mul.width2, mul.pipeline) << endl;
-      vlog << fact.snippet[VerilogFactory::END] << endl;
-      
-      vlog << endl << "// Assignments to sum_a1b1 and sum_c1d1" << endl;
-      vlog << "assign sum_a1b1 = a1 ^ b1;" << endl;
-      vlog << "assign sum_c1d1 = c1 ^ d1;" << endl;
+			// Step_2
+      			vlog << endl << "// Step-2 of 2-Way Karatsuba Multiplier" << endl;
+      			vlog << fact.snippet[VerilogFactory::ALWAYS] << endl;
+      			vlog << VerilogFactory::scoper(1, fact.getMulLogic_2_Way_Karatsuba_Step_2(mul.width1, mul.width2, mul.pipeline)) << endl;
+      			vlog << fact.snippet[VerilogFactory::END] << endl;
+      			
+      			vlog << endl << "// Assignments to sum_a1b1 and sum_c1d1" << endl;
+      			vlog << "assign sum_a1b1 = a1 ^ b1;" << endl;
+      			vlog << "assign sum_c1d1 = c1 ^ d1;" << endl;
 
-      // Step_3
-      vlog << endl << "// Step-3 of 2-Way Karatsuba Multiplier" << endl;
-      vlog << fact.snippet[VerilogFactory::ALWAYS] << endl;
-      vlog << fact.getMulLogic_2_Way_Karatsuba_Step_3(mul.width1, mul.width2, mul.pipeline) << endl;
-      vlog << fact.snippet[VerilogFactory::END] << endl;
+      			// Step_3
+      			vlog << endl << "// Step-3 of 2-Way Karatsuba Multiplier" << endl;
+      			vlog << fact.snippet[VerilogFactory::ALWAYS] << endl;
+      			vlog << VerilogFactory::scoper(1, fact.getMulLogic_2_Way_Karatsuba_Step_3(mul.width1, mul.width2, mul.pipeline)) << endl;
+      			vlog << fact.snippet[VerilogFactory::END] << endl;
 			vlog << fact.snippet[VerilogFactory::ENDMODULE] << endl;
 		}
 		
@@ -343,31 +340,31 @@ if (mul.name == "three_way_toom_cook") {
             
       // Counters for each step of 3-Way TCM multiplier
       //vlog << "// Counters deceleration for each step of 3-Way TCM multiplier" << endl;
-      fact.addVar("counter_d", (mul.width1/3)); // will check bits of d
-      fact.addVar("counter_e1", (mul.width1/3)); // will check bits of e1
-      fact.addVar("counter_e2", (mul.width1/3)); // will check bits of e2
-      fact.addVar("counter_f1", (mul.width1/3)); // will check bits of f1
-      fact.addVar("counter_f2", (mul.width1/3)); // will check bits of f2
-      fact.addVar("counter_f3", (mul.width1/3)); // will check bits of f3
-      fact.addVar("counter_g1", (mul.width1/3)); // will check bits of g1
-      fact.addVar("counter_g2", (mul.width1/3)); // will check bits of g2
-      fact.addVar("counter_h", (mul.width1/3)); // will check bits of h
+      fact.addVar("counter_d", (mul.width1/3), false); // will check bits of d
+      fact.addVar("counter_e1", (mul.width1/3), false); // will check bits of e1
+      fact.addVar("counter_e2", (mul.width1/3), false); // will check bits of e2
+      fact.addVar("counter_f1", (mul.width1/3), false); // will check bits of f1
+      fact.addVar("counter_f2", (mul.width1/3), false); // will check bits of f2
+      fact.addVar("counter_f3", (mul.width1/3), false); // will check bits of f3
+      fact.addVar("counter_g1", (mul.width1/3), false); // will check bits of g1
+      fact.addVar("counter_g2", (mul.width1/3), false); // will check bits of g2
+      fact.addVar("counter_h", (mul.width1/3), false); // will check bits of h
       
       // To store intermediate multiplication results
       //vlog << "// To store intermediate multiplication results of 3-Way TCM multiplier" << endl;
-      fact.addVar("d", mul.width1); 
-      fact.addVar("e1_mul", mul.width1);
-      fact.addVar("e2_mul", mul.width1);
-      fact.addVar("e", mul.width1); // e = e1_mul + e2_mul
-      fact.addVar("f1_mul", mul.width1);
-      fact.addVar("f2_mul", mul.width1);
-      fact.addVar("f3_mul", mul.width1);
-      fact.addVar("f", mul.width1); // f = f1_mul + f2_mul + f3_mul
-      fact.addVar("g1_mul", mul.width1);
-      fact.addVar("g2_mul", mul.width1);
-      fact.addVar("g", mul.width1); // g = g1_mul + g2_mul
-      fact.addVar("h", mul.width1);
-      fact.addVar("temp", (mul.width1 + mul.width2));
+      fact.addVar("d", mul.width1, false); 
+      fact.addVar("e1_mul", mul.width1, false);
+      fact.addVar("e2_mul", mul.width1, false);
+      fact.addVar("e", mul.width1, false); // e = e1_mul + e2_mul
+      fact.addVar("f1_mul", mul.width1, false);
+      fact.addVar("f2_mul", mul.width1, false);
+      fact.addVar("f3_mul", mul.width1, false);
+      fact.addVar("f", mul.width1, false); // f = f1_mul + f2_mul + f3_mul
+      fact.addVar("g1_mul", mul.width1, false);
+      fact.addVar("g2_mul", mul.width1, false);
+      fact.addVar("g", mul.width1, false); // g = g1_mul + g2_mul
+      fact.addVar("h", mul.width1, false);
+      fact.addVar("temp", (mul.width1 + mul.width2), false);
       
       //vlog << "assign a0 = a[" << fact.getInternalDefinitionAssignSetMSB_as_m_minus_1() << ":" << fact.getInternalDefinitionAssignSetLSB_as_m_over_2() << "];" << endl;
     
@@ -503,47 +500,47 @@ if (mul.name == "four_way_toom_cook") {
             
       // Counters for each step of 3-Way TCM multiplier
       //vlog << "// Counters deceleration for each step of 3-Way TCM multiplier" << endl;
-      fact.addVar("counter_d", (mul.width1/4)); // will check bits of d
-      fact.addVar("counter_e1", (mul.width1/4)); // will check bits of e1
-      fact.addVar("counter_e2", (mul.width1/4)); // will check bits of e2
-      fact.addVar("counter_f1", (mul.width1/4)); // will check bits of f1
-      fact.addVar("counter_f2", (mul.width1/4)); // will check bits of f2
-      fact.addVar("counter_f3", (mul.width1/4)); // will check bits of f3
-      fact.addVar("counter_g1", (mul.width1/4)); // will check bits of g1
-      fact.addVar("counter_g2", (mul.width1/4)); // will check bits of g2
-      fact.addVar("counter_g3", (mul.width1/4)); // will check bits of g3
-      fact.addVar("counter_g4", (mul.width1/4)); // will check bits of g4
-      fact.addVar("counter_h1", (mul.width1/4)); // will check bits of h1
-      fact.addVar("counter_h2", (mul.width1/4)); // will check bits of h2
-      fact.addVar("counter_h3", (mul.width1/4)); // will check bits of h3
-      fact.addVar("counter_i1", (mul.width1/4)); // will check bits of i1
-      fact.addVar("counter_i2", (mul.width1/4)); // will check bits of i2
-      fact.addVar("counter_j", (mul.width1/4)); // will check bits of j
+      fact.addVar("counter_d", (mul.width1/4), false); // will check bits of d
+      fact.addVar("counter_e1", (mul.width1/4), false); // will check bits of e1
+      fact.addVar("counter_e2", (mul.width1/4), false); // will check bits of e2
+      fact.addVar("counter_f1", (mul.width1/4), false); // will check bits of f1
+      fact.addVar("counter_f2", (mul.width1/4), false); // will check bits of f2
+      fact.addVar("counter_f3", (mul.width1/4), false); // will check bits of f3
+      fact.addVar("counter_g1", (mul.width1/4), false); // will check bits of g1
+      fact.addVar("counter_g2", (mul.width1/4), false); // will check bits of g2
+      fact.addVar("counter_g3", (mul.width1/4), false); // will check bits of g3
+      fact.addVar("counter_g4", (mul.width1/4), false); // will check bits of g4
+      fact.addVar("counter_h1", (mul.width1/4), false); // will check bits of h1
+      fact.addVar("counter_h2", (mul.width1/4), false); // will check bits of h2
+      fact.addVar("counter_h3", (mul.width1/4), false); // will check bits of h3
+      fact.addVar("counter_i1", (mul.width1/4), false); // will check bits of i1
+      fact.addVar("counter_i2", (mul.width1/4), false); // will check bits of i2
+      fact.addVar("counter_j", (mul.width1/4), false); // will check bits of j
       
       // To store intermediate multiplication results
       //vlog << "// To store intermediate multiplication results of 3-Way TCM multiplier" << endl;
-      fact.addVar("d", mul.width1); 
-      fact.addVar("e1_mul", mul.width1);
-      fact.addVar("e2_mul", mul.width1);
-      fact.addVar("e", mul.width1); // e = e1_mul + e2_mul
-      fact.addVar("f1_mul", mul.width1);
-      fact.addVar("f2_mul", mul.width1);
-      fact.addVar("f3_mul", mul.width1);
-      fact.addVar("f", mul.width1); // f = f1_mul + f2_mul + f3_mul
-      fact.addVar("g1_mul", mul.width1);
-      fact.addVar("g2_mul", mul.width1);
-      fact.addVar("g3_mul", mul.width1);
-      fact.addVar("g4_mul", mul.width1);
-      fact.addVar("g", mul.width1); // g = g1_mul + g2_mul + g3_mul + g4_mul
-      fact.addVar("h1_mul", mul.width1);
-      fact.addVar("h2_mul", mul.width1);
-      fact.addVar("h3_mul", mul.width1);
-      fact.addVar("h", mul.width1); // h = h1_mul + h2_mul + h3_mul
-      fact.addVar("i1_mul", mul.width1);
-      fact.addVar("i2_mul", mul.width1);
-      fact.addVar("i", mul.width1); // i = i1_mul + i2_mul
-      fact.addVar("j", mul.width1);
-      fact.addVar("temp", (mul.width1 + mul.width2));
+      fact.addVar("d", mul.width1, false); 
+      fact.addVar("e1_mul", mul.width1, false);
+      fact.addVar("e2_mul", mul.width1, false);
+      fact.addVar("e", mul.width1, false); // e = e1_mul + e2_mul
+      fact.addVar("f1_mul", mul.width1, false);
+      fact.addVar("f2_mul", mul.width1, false);
+      fact.addVar("f3_mul", mul.width1, false);
+      fact.addVar("f", mul.width1, false); // f = f1_mul + f2_mul + f3_mul
+      fact.addVar("g1_mul", mul.width1, false);
+      fact.addVar("g2_mul", mul.width1, false);
+      fact.addVar("g3_mul", mul.width1, false);
+      fact.addVar("g4_mul", mul.width1, false);
+      fact.addVar("g", mul.width1, false); // g = g1_mul + g2_mul + g3_mul + g4_mul
+      fact.addVar("h1_mul", mul.width1, false);
+      fact.addVar("h2_mul", mul.width1, false);
+      fact.addVar("h3_mul", mul.width1, false);
+      fact.addVar("h", mul.width1, false); // h = h1_mul + h2_mul + h3_mul
+      fact.addVar("i1_mul", mul.width1, false);
+      fact.addVar("i2_mul", mul.width1, false);
+      fact.addVar("i", mul.width1, false); // i = i1_mul + i2_mul
+      fact.addVar("j", mul.width1, false);
+      fact.addVar("temp", (mul.width1 + mul.width2), false);
       
       //vlog << "assign a0 = a[" << fact.getInternalDefinitionAssignSetMSB_as_m_minus_1() << ":" << fact.getInternalDefinitionAssignSetLSB_as_m_over_2() << "];" << endl;
     
@@ -728,19 +725,19 @@ if (mul.name == "four_way_toom_cook") {
 			fact.addIO("b", "input", mul.width2);
 			fact.addIO("c", "output reg", (mul.width1 + mul.width2));
       
-      fact.addVar("local_rst", 1);
-      fact.addVar("digit_mul_start", 1);
-      fact.addVar("digit_mul_start_next", 1);
-      fact.addVar("short_b", mul.digit_size);
-      fact.addVar("short_b_next", mul.digit_size);
-      fact.addVar("counter_digits", mul.width2/mul.digit_size);
-      fact.addVar("counter_digits_next", mul.width2/mul.digit_size);
-      fact.addVar("state", 2); 
-      fact.addVar("next_state", 2);
-      fact.addVar("next_c", (mul.width1+mul.width2));
-      fact.addVar("tmp", mul.width2);
-      fact.addVar("upper_addr", (mul.width2/2)-1);
-      fact.addVar("lower_addr", (mul.width2/2)-1);
+      fact.addVar("local_rst", 1, false);
+      fact.addVar("digit_mul_start", 1, false);
+      fact.addVar("digit_mul_start_next", 1, false);
+      fact.addVar("short_b", mul.digit_size, false);
+      fact.addVar("short_b_next", mul.digit_size, false);
+      fact.addVar("counter_digits", mul.width2/mul.digit_size, false);
+      fact.addVar("counter_digits_next", mul.width2/mul.digit_size, false);
+      fact.addVar("state", 2, false); 
+      fact.addVar("next_state", 2, false);
+      fact.addVar("next_c", (mul.width1+mul.width2), false);
+      fact.addVar("tmp", mul.width2, false);
+      fact.addVar("upper_addr", (mul.width2/2)-1, false);
+      fact.addVar("lower_addr", (mul.width2/2)-1, false);
       
       fact.addWire("digit_mul_done", 1);
       fact.addWire("short_c", (mul.width1 + mul.digit_size));
