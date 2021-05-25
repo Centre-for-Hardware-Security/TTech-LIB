@@ -160,52 +160,6 @@ std::string VerilogFactory::getInternalDefinitionParameter() {
 	return tmp;
 }
 
-
-/*
-// Set size of first operand
-std::string VerilogFactory::getInternalDefinition_SetFirst_OperandSize_for_sbm_digitized() {
-	std::string tmp;
-  
-	auto k = _varwidths_2.begin();
-
-			tmp = tmp + std::to_string(*k);
-	
-  return tmp;
-}
-*/
-// Assign statement for 2-Way Karatsuba
-std::string VerilogFactory::getInternalDefinitionAssignSetMSB_as_m_minus_1() {
-	std::string tmp;
-  
-	auto k = _varwidths.begin();
-
-			tmp = tmp + std::to_string(*k*2-1);
-	
-  return tmp;
-}
-
-// Assign statement for 2-Way Karatsuba
-std::string VerilogFactory::getInternalDefinitionAssignSetMSB_as_m_over_2_minus_1() {
-	std::string tmp;
-  
-	auto k = _varwidths.begin();
-
-			tmp = tmp + std::to_string(*k*2/2-1);
-	
-  return tmp;
-}
-
-// Assign statement for 2-Way Karatsuba
-std::string VerilogFactory::getInternalDefinitionAssignSetLSB_as_m_over_2() {
-	std::string tmp;
-  
-	auto k = _varwidths.begin();
-
-			tmp = tmp + std::to_string(*k);
-	
-  return tmp;
-}
-
 // Assign statement for 3-Way TCM
 std::string VerilogFactory::getInternalDefinitionAssignSetMSB_as_m_over_3_minus_1(){
    std::string tmp;
@@ -377,7 +331,7 @@ std::string VerilogFactory::getResetStatement(bool pipe) { // if pipe is true, m
 	return tmp;
 }
 
-void VerilogFactory::genTempVars(int pipeline) { // this function creates the pipelining registers in the right lists
+void VerilogFactory::genTempVars(int pipeline, bool inputs) { // this function creates the pipelining registers in the right lists. if inputs is true, the inputs are pipelined, otherwise outputs are
 	std::string tmp;
 
 	if (pipeline == 1) {
@@ -392,9 +346,18 @@ void VerilogFactory::genTempVars(int pipeline) { // this function creates the pi
 	
 	while (times != 0) {
 		while (i != _ionames.end()) {
-			if (((*j) == "input") && ((*k) == "regular")) {
-				tmp = *i + "_temp_" + std::to_string(times);
-				addVar(tmp, *l, true); 
+			if (inputs) {
+				if (((*j) == "input") && ((*k) == "regular")) {
+					tmp = *i + "_temp_" + std::to_string(times);
+					addVar(tmp, *l, true); 
+				}
+			}
+			else {
+				if (((*j) == "output reg") && ((*k) == "regular")) {
+					tmp = *i + "_temp_" + std::to_string(times);
+					addVar(tmp, *l, true); 
+				}
+
 			}
 	
 			i++;
@@ -549,68 +512,67 @@ std::string VerilogFactory::getMulLogicSchoolbook(int width1, int width2, int pi
 std::string VerilogFactory::getMulLogic_2_Way_Karatsuba_Step_1(int width1, int width2, int pipeline) {
 	std::string tmp;
 
-	if (pipeline == 1) {
-		tmp = "if (rst) begin\n";
-		tmp = tmp + "\tmul_a1c1 <= " + std::to_string(width1) + "'d0;\n";
-		tmp = tmp + "\tcounter_a1c1 <= " + std::to_string(width1/2) + "'d0;\n";
-		tmp = tmp + "end\n";
+	tmp = "if (rst) begin\n";
+	tmp = tmp + "\tmul_a1c1 <= " + std::to_string(width1) + "'d0;\n";
+	tmp = tmp + "\tcounter_a1c1 <= " + std::to_string(width1/2) + "'d0;\n";
+	tmp = tmp + "end\n";
     
-		tmp = tmp + "else if (counter_a1c1 < " + std::to_string(width1/2+1) + ") begin\n";
-		tmp = tmp + "\tif (a[counter_a1c1] == 1'b1) begin\n";
-		tmp = tmp + "\t\tmul_a1c1 <= mul_a1c1 ^ (c1 << counter_a1c1);\n";
-		tmp = tmp + "\t\tcounter_a1c1 <= counter_a1c1 + 1;\n";
-		tmp = tmp + "\tend\n";
-		tmp = tmp + "\tcounter_a1c1 <= counter_a1c1 + 1;\n";
-		tmp = tmp + "end\n";
-		return tmp; // no pipelining version
-	}
+	tmp = tmp + "else if (counter_a1c1 < " + std::to_string(width1/2+1) + ") begin\n";
+	tmp = tmp + "\tif (a[counter_a1c1] == 1'b1) begin\n";
+	tmp = tmp + "\t\tmul_a1c1 <= mul_a1c1 ^ (c1 << counter_a1c1);\n";
+	tmp = tmp + "\t\tcounter_a1c1 <= counter_a1c1 + 1;\n";
+	tmp = tmp + "\tend\n";
+	tmp = tmp + "\tcounter_a1c1 <= counter_a1c1 + 1;\n";
+	tmp = tmp + "end\n";
+	return tmp; 
 }
 
 std::string VerilogFactory::getMulLogic_2_Way_Karatsuba_Step_2(int width1, int width2, int pipeline) {
 	std::string tmp;
 
-	if (pipeline == 1) {  
-		tmp = "if (rst) begin\n";
-    		tmp = tmp + "\tmul_b1d1 <= " + std::to_string(width1) + "'d0;\n";
-    		tmp = tmp + "\tcounter_b1d1 <= " + std::to_string(width1/2) + "'d0;\n";
-    		tmp = tmp + "end\n";
+	tmp = "if (rst) begin\n";
+    	tmp = tmp + "\tmul_b1d1 <= " + std::to_string(width1) + "'d0;\n";
+    	tmp = tmp + "\tcounter_b1d1 <= " + std::to_string(width1/2) + "'d0;\n";
+    	tmp = tmp + "end\n";
     
-		tmp = tmp + "else if (counter_b1d1 < " + std::to_string(width1/2+1) + ") begin\n";
-		tmp = tmp + "\tif (b[counter_b1d1] == 1'b1) begin\n";
-		tmp = tmp + "\t\tmul_b1d1 <= mul_a1c1 ^ (d1 << counter_b1d1);\n";
-		tmp = tmp + "\t\tcounter_b1d1 <= counter_b1d1 + 1;\n";
-		tmp = tmp + "\tend\n";
-		tmp = tmp + "\tcounter_b1d1 <= counter_b1d1 + 1;\n";
-		tmp = tmp + "end\n";
-		return tmp; // no pipelining version
-	}
+	tmp = tmp + "else if (counter_b1d1 < " + std::to_string(width1/2+1) + ") begin\n";
+	tmp = tmp + "\tif (b[counter_b1d1] == 1'b1) begin\n";
+	tmp = tmp + "\t\tmul_b1d1 <= mul_a1c1 ^ (d1 << counter_b1d1);\n";
+	tmp = tmp + "\t\tcounter_b1d1 <= counter_b1d1 + 1;\n";
+	tmp = tmp + "\tend\n";
+	tmp = tmp + "\tcounter_b1d1 <= counter_b1d1 + 1;\n";
+	tmp = tmp + "end\n";
+	return tmp;
 }
 
 std::string VerilogFactory::getMulLogic_2_Way_Karatsuba_Step_3(int width1, int width2, int pipeline) {
 	std::string tmp;
+	std::string regname = "c";
 
-	if (pipeline == 1) {  
-		tmp = "if (rst) begin\n";
-    		tmp = tmp + "\tc = " + std::to_string(width1+width2) + "'d0;\n";
-    		tmp = tmp + "\tmul_sum_a1b1_sum_c1d1 = " + std::to_string(width1+2) + "'d0;\n";
-    		tmp = tmp + "\tcounter_sum_a1b1_c1d1 = " + std::to_string((width1/2)+2) + "'d0;\n";
-    		tmp = tmp + "end\n";
-    
-		tmp = tmp + "else if (counter_sum_a1b1_c1d1 < " + std::to_string(width1/2+1) + ") begin\n";
-		tmp = tmp + "\tif (sum_a1b1[counter_sum_a1b1_c1d1] == 1'b1) begin\n";
-		tmp = tmp + "\t\tmul_sum_a1b1_sum_c1d1 = mul_sum_a1b1_sum_c1d1 ^ (sum_c1d1 << counter_sum_a1b1_c1d1);\n";
-		tmp = tmp + "\t\tcounter_sum_a1b1_c1d1 = counter_sum_a1b1_c1d1 + 1;\n";
-		tmp = tmp + "\tend\n";
-		tmp = tmp + "\tcounter_sum_a1b1_c1d1 = counter_sum_a1b1_c1d1 + 1;\n";
-		tmp = tmp + "end\n";
-   
-		tmp = tmp + "c = mul_sum_a1b1_sum_c1d1 - mul_b1d1 - mul_a1c1;\n";
-    		tmp = tmp + "c = c << " + std::to_string(width1/2) + ";\n";
-    		tmp = tmp + "c = c ^ (mul_a1c1 << " + std::to_string(width1) + ");\n";
-    		tmp = tmp + "c = c ^ mul_b1d1;\n";
-        
-		return tmp; // no pipelining version
+	if (pipeline > 1) { // ... but if pipelined assignments are to temporary reg
+		regname = "c_temp_" + std::to_string(pipeline-1);
 	}
+
+	tmp = "if (rst) begin\n";
+    	tmp = tmp + "\t" + regname + " = " + std::to_string(width1+width2) + "'d0;\n";
+    	tmp = tmp + "\tmul_sum_a1b1_sum_c1d1 = " + std::to_string(width1+2) + "'d0;\n";
+    	tmp = tmp + "\tcounter_sum_a1b1_c1d1 = " + std::to_string((width1/2)+2) + "'d0;\n";
+    	tmp = tmp + "end\n";
+    
+	tmp = tmp + "else if (counter_sum_a1b1_c1d1 < " + std::to_string(width1/2+1) + ") begin\n";
+	tmp = tmp + "\tif (sum_a1b1[counter_sum_a1b1_c1d1] == 1'b1) begin\n";
+	tmp = tmp + "\t\tmul_sum_a1b1_sum_c1d1 = mul_sum_a1b1_sum_c1d1 ^ (sum_c1d1 << counter_sum_a1b1_c1d1);\n";
+	tmp = tmp + "\t\tcounter_sum_a1b1_c1d1 = counter_sum_a1b1_c1d1 + 1;\n";
+	tmp = tmp + "\tend\n";
+	tmp = tmp + "\tcounter_sum_a1b1_c1d1 = counter_sum_a1b1_c1d1 + 1;\n";
+	tmp = tmp + "end\n";
+   
+	tmp = tmp + regname + " = mul_sum_a1b1_sum_c1d1 - mul_b1d1 - mul_a1c1;\n";
+    	tmp = tmp + regname + " = " + regname + " << " + std::to_string(width1/2) + ";\n";
+    	tmp = tmp + regname + " = " + regname + " ^ (mul_a1c1 << " + std::to_string(width1) + ");\n";
+    	tmp = tmp + regname + " = " + regname + " ^ mul_b1d1;\n";
+        
+	return tmp;
 }
 
 // 3_Way_TCM Step 1

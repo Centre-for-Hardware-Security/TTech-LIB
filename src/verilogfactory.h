@@ -34,7 +34,7 @@ class VerilogFactory {
 		void addAssign(int width); 
 		void addParameter(const std::string name, int width);     // include parameter
 
-		void genTempVars(int pipeline);
+		void genTempVars(int pipeline, bool inputs);
         
 		std::string getModuleDefinition();
 		std::string getIODefinition();
@@ -42,9 +42,6 @@ class VerilogFactory {
     std::string getInternalDefinitionWire();  
     std::string getInternalDefinitionParameter(); 
     std::string getInternalDefinition_SetFirst_OperandSize_for_sbm_digitized();
-    std::string getInternalDefinitionAssignSetMSB_as_m_minus_1(); 
-    std::string getInternalDefinitionAssignSetMSB_as_m_over_2_minus_1();
-    std::string getInternalDefinitionAssignSetLSB_as_m_over_2();
     std::string getInternalDefinitionAssignSetMSB_as_m_over_3_minus_1();
     std::string getInternalDefinitionAssignSetMSB_as_m_times_2_over_3_minus_1(); 
     std::string getInternalDefinitionAssignSetMSB_as_m_minus_1_for_3_way_TCM(); 

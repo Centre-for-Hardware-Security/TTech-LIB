@@ -182,7 +182,7 @@ void genMultipliers() {
 			fact.addIO("b", "input", mul.width2);
 			fact.addIO("c", "output reg", mul.width1 + mul.width2);
 
-			fact.genTempVars(mul.pipeline);
+			fact.genTempVars(mul.pipeline, true);
 
 			vlog << fact.getModuleDefinition() << endl;
 			vlog << fact.getIODefinition() << endl;
@@ -211,9 +211,9 @@ void genMultipliers() {
 		}
 
 		if (mul.name == "schoolbook") {
-			fact.addIO("clk", "input");
+			fact.addIO("clk", "input"); // special inputs
 			fact.addIO("rst", "input");
-			fact.addIO("a", "input", mul.width1);
+			fact.addIO("a", "input", mul.width1); // regular inputs
 			fact.addIO("b", "input", mul.width2);
 			fact.addIO("c", "output reg", mul.width1 + mul.width2);
 			fact.addVar("count", log2(mul.width1) + 1, false); // TODO: check this is really width1
@@ -221,7 +221,7 @@ void genMultipliers() {
 				fact.addVar("skip", log2(mul.pipeline - 1) + 1, false);
 			}
 
-			fact.genTempVars(mul.pipeline);
+			fact.genTempVars(mul.pipeline, true);
 
 			vlog << fact.getModuleDefinition() << endl;
 			vlog << fact.getIODefinition() << endl;
@@ -257,6 +257,8 @@ void genMultipliers() {
 			fact.addIO("a", "input", mul.width1);
 			fact.addIO("b", "input", mul.width2);
 			fact.addIO("c", "output reg", mul.width1 + mul.width2);
+
+			fact.genTempVars(mul.pipeline, false);
 			
 			// To declare wires in the generated verilog file
 			fact.addWire("a1", mul.width1/2); // include wire
@@ -274,17 +276,9 @@ void genMultipliers() {
       			fact.addVar("mul_b1d1", mul.width1, false); 
       			fact.addVar("mul_sum_a1b1_sum_c1d1", mul.width1 + 2, false); 
       
-      //fact.getAssignonWire(); // first parameter towards left is the destination while another parameter towards right is the source to be copied 
-             
-      /*
-			if (mul.pipeline > 1) {
-				fact.addVar("skip", log2(mul.pipeline - 1) + 1);
-			}
-      */
-      
 			vlog << fact.getModuleDefinition() << endl;
 			vlog << fact.getIODefinition() << endl;
-			//vlog << fact.getTempVars(mul.pipeline) << endl; // pipelined inputs are declared here
+			vlog << fact.getTempVars(mul.pipeline) << endl; // pipelined inputs are declared here
 			vlog << "// Wires declaration " << endl;
 			vlog << fact.getInternalDefinitionWire() << endl;
 			vlog << "// Registers declaration " << endl;
@@ -292,10 +286,10 @@ void genMultipliers() {
 			
 			// Initial assignments
 			vlog << "// breaking the inputs into 4 parts of equal length" << endl;
-			vlog << "assign a1 = a[" << fact.getInternalDefinitionAssignSetMSB_as_m_minus_1() << ":" << fact.getInternalDefinitionAssignSetLSB_as_m_over_2() << "];" << endl;
-			vlog << "assign b1 = a[" << fact.getInternalDefinitionAssignSetMSB_as_m_over_2_minus_1() << ":0];" << endl;
-			vlog << "assign c1 = b[" << fact.getInternalDefinitionAssignSetMSB_as_m_minus_1() << ":" << fact.getInternalDefinitionAssignSetLSB_as_m_over_2() << "];" << endl;
-			vlog << "assign d1 = b[" << fact.getInternalDefinitionAssignSetMSB_as_m_over_2_minus_1() << ":0];" << endl << endl;
+			vlog << "assign a1 = a[" << std::to_string(mul.width1 -1) << ":" <<  std::to_string(mul.width1/2) << "];" << endl;
+			vlog << "assign b1 = a[" << std::to_string(mul.width1/2 -1) << ":" <<  std::to_string(0) << "];" << endl;
+			vlog << "assign c1 = b[" << std::to_string(mul.width2 -1) << ":" <<  std::to_string(mul.width2/2) << "];" << endl;
+			vlog << "assign d1 = b[" << std::to_string(mul.width2/2 -1) << ":" <<  std::to_string(0) << "];" << endl;
 						      
 			// Step_1
 			vlog << "// Step-1 of 2-Way Karatsuba Multiplier" << endl;
@@ -318,10 +312,30 @@ void genMultipliers() {
       			vlog << fact.snippet[VerilogFactory::ALWAYS] << endl;
       			vlog << VerilogFactory::scoper(1, fact.getMulLogic_2_Way_Karatsuba_Step_3(mul.width1, mul.width2, mul.pipeline)) << endl;
       			vlog << fact.snippet[VerilogFactory::END] << endl;
+
+      			if (mul.pipeline > 1) {
+	      			vlog << endl << "// pipeline stages" << endl;
+      				vlog << fact.snippet[VerilogFactory::ALWAYS] << endl;
+
+				int i = mul.pipeline;
+				std::string temp;
+
+				temp = "c <= c_temp_1;\n";
+      				vlog << VerilogFactory::scoper(1, temp) << endl;
+
+				while (i > 2) {
+					temp = "c_temp_" + std::to_string(i-2) + " <= c_temp_" + std::to_string(i-1) + ";\n";
+	      				vlog << VerilogFactory::scoper(1, temp) << endl;
+      					i--;
+				}
+
+					vlog << fact.snippet[VerilogFactory::END] << endl;
+			}
+			
 			vlog << fact.snippet[VerilogFactory::ENDMODULE] << endl;
 		}
 		
-if (mul.name == "three_way_toom_cook") {
+	if (mul.name == "three_way_toom_cook") {
       
    		fact.addIO("clk", "input");
 			fact.addIO("rst", "input");
