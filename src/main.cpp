@@ -422,13 +422,13 @@ void genMultipliers() {
       // Step_2 (Part-1)
       vlog << endl << "// Step-2 (Part-1) of 3-Way TCM Multiplier" << endl;
       vlog << fact.snippet[VerilogFactory::ALWAYS] << endl;
-      vlog << fact.getMulLogic_3_Way_TCM_Step_2_part_1(mul.width1, mul.width2, mul.pipeline);
+      vlog << fact.getMulLogic_3_Way_TCM_Step_2_part_1(mul.width1, mul.width2, mul.pipeline) << endl;
       vlog << fact.snippet[VerilogFactory::END] << endl;
       
       // Step_2 (Part-2)
       vlog << endl << "// Step-2 (Part-2) of 3-Way TCM Multiplier" << endl;
       vlog << fact.snippet[VerilogFactory::ALWAYS] << endl;
-      vlog << fact.getMulLogic_3_Way_TCM_Step_2_part_2(mul.width1, mul.width2, mul.pipeline);
+      vlog << fact.getMulLogic_3_Way_TCM_Step_2_part_2(mul.width1, mul.width2, mul.pipeline) << endl;
       vlog << fact.snippet[VerilogFactory::END] << endl;
       
       // Step_2 (Part-3)

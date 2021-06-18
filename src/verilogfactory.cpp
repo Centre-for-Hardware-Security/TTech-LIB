@@ -2,7 +2,7 @@
 
 VerilogFactory::VerilogFactory() {
 	snippet[ALWAYS] = "always @(posedge clk) begin";
-	snippet[RESET0] = "if (rst_n == 1\'b0) begin";
+	snippet[RESET0] = "if (rst == 1\'b0) begin";
 	snippet[RESET1] = "if (rst == 1\'b1) begin";
 	snippet[END] = "end";
 	snippet[ELSEBEGIN] = "else begin";
