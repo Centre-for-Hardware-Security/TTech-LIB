@@ -251,7 +251,97 @@ void genMultipliers() {
 			vlog << fact.snippet[VerilogFactory::ENDMODULE] << endl;
 		}
 
-		if (mul.name == "two_way_karatsuba") {
+		if (mul.name == "booth") {
+   			fact.addIO("clk", "input");
+			fact.addIO("rst", "input");
+			fact.addIO("a", "input", mul.width1);
+			fact.addIO("b", "input", mul.width2);
+			fact.addIO("c", "output reg", mul.width1 + mul.width2);
+
+			fact.genTempVars(mul.pipeline, false);
+			
+			// To declare wires in the generated verilog file
+			//fact.addWire("a1", mul.width1/2); // include wire
+			//fact.addWire("b1", mul.width1/2); // include wire
+      			      
+      			// To declare reg in the generated verilog file
+      			fact.addVar("mul_w_signguard", mul.width1 + 1, false); // declare reg equal to the size of an operand
+      			fact.addVar("count", log2(mul.width1) + 1, false); // TODO: check this is really count log2(operand)
+      			fact.addVar("add_w_signguard", mul.width1 + 1, false); // declare reg equal to the size of an operand
+      			fact.addVar("mul_ab1", (mul.width1 + mul.width2) + 2 , false); // register to store multiplication result of a1 and c1 and its width will be sum of widths of a1 and c1
+
+      
+			vlog << fact.getModuleDefinition() << endl;
+			vlog << fact.getIODefinition() << endl;
+			vlog << fact.getTempVars(mul.pipeline) << endl; // pipelined inputs are declared here
+			//vlog << "// Wires declaration " << endl;
+			vlog << fact.getInternalDefinitionWire() << endl;
+			vlog << "// Registers declaration " << endl;
+			vlog << fact.getInternalDefinition() << endl; // pipelined inputs are declared here
+			
+			// Initial assignments
+			//vlog << "// breaking the inputs into 4 parts of equal length" << endl;
+			//vlog << "assign a1 = a[" << std::to_string(mul.width1 -1) << ":" <<  std::to_string(mul.width1/2) << "];" << endl;
+			//vlog << "assign b1 = a[" << std::to_string(mul.width1/2 -1) << ":" <<  std::to_string(0) << "];" << endl;
+			//vlog << "assign c1 = b[" << std::to_string(mul.width2 -1) << ":" <<  std::to_string(mul.width2/2) << "];" << endl;
+			//vlog << "assign d1 = b[" << std::to_string(mul.width2/2 -1) << ":" <<  std::to_string(0) << "];" << endl;
+						      
+			// Step_1
+			vlog << "// Step-1 of Booth Multiplier" << endl;
+			vlog << fact.snippet[VerilogFactory::ALWAYS] << endl;
+			vlog << VerilogFactory::scoper(1, fact.getMulLogic_Booth_Step_1(mul.width1, mul.width2, log2(mul.width1) + 1, mul.pipeline)) << endl;
+			vlog << fact.snippet[VerilogFactory::END] << endl;
+      
+			// Step_2
+      			vlog << endl << "// Step-2 of Booth Multiplier" << endl;
+      			vlog << fact.snippet[VerilogFactory::ALWAYS] << endl;
+      			vlog << VerilogFactory::scoper(1, fact.getMulLogic_Booth_Step_2(mul.width1, mul.width2, mul.pipeline)) << endl;
+      			vlog << fact.snippet[VerilogFactory::END] << endl;
+				
+			// Step_3
+      			vlog << endl << "// Step-3 of Booth Multiplier" << endl;
+      			vlog << fact.snippet[VerilogFactory::ALWAYS_ASTERIK] << endl;
+      			vlog << VerilogFactory::scoper(1, fact.getMulLogic_Booth_Step_3(mul.width1, mul.width2, mul.pipeline)) << endl;
+      			vlog << fact.snippet[VerilogFactory::END] << endl;
+      			
+      			//vlog << endl << "// Assignments to sum_a1b1 and sum_c1d1" << endl;
+      			//vlog << "assign sum_a1b1 = a1 ^ b1;" << endl;
+      			//vlog << "assign sum_c1d1 = c1 ^ d1;" << endl;
+
+      			// Step_4
+      			vlog << endl << "// Step-4 of Booth Multiplier" << endl;
+      			vlog << fact.snippet[VerilogFactory::ALWAYS] << endl;
+      			vlog << VerilogFactory::scoper(1, fact.getMulLogic_Booth_Step_4(mul.width1, mul.width2, mul.pipeline)) << endl;
+      			vlog << fact.snippet[VerilogFactory::END] << endl;
+				
+				 // Step_5
+      			vlog << endl << "// Step-5 of Booth Multiplier" << endl;
+      			vlog << fact.snippet[VerilogFactory::ALWAYS] << endl;
+      			vlog << VerilogFactory::scoper(1, fact.getMulLogic_Booth_Step_5(mul.width1, mul.width2, mul.pipeline)) << endl;
+      			vlog << fact.snippet[VerilogFactory::END] << endl;
+				
+      			if (mul.pipeline > 1) {
+	      			vlog << endl << "// pipeline stages" << endl;
+      				vlog << fact.snippet[VerilogFactory::ALWAYS] << endl;
+
+				int i = mul.pipeline;
+				std::string temp;
+
+				temp = "c <= c_temp_1;\n";
+      				vlog << VerilogFactory::scoper(1, temp) << endl;
+
+				while (i > 2) {
+					temp = "c_temp_" + std::to_string(i-2) + " <= c_temp_" + std::to_string(i-1) + ";\n";
+	      				vlog << VerilogFactory::scoper(1, temp) << endl;
+      					i--;
+				}
+
+					vlog << fact.snippet[VerilogFactory::END] << endl;
+			}
+			
+			vlog << fact.snippet[VerilogFactory::ENDMODULE] << endl;
+		}
+			if (mul.name == "two_way_karatsuba") {
    			fact.addIO("clk", "input");
 			fact.addIO("rst", "input");
 			fact.addIO("a", "input", mul.width1);
@@ -334,7 +424,6 @@ void genMultipliers() {
 			
 			vlog << fact.snippet[VerilogFactory::ENDMODULE] << endl;
 		}
-		
 	if (mul.name == "three_way_toom_cook") {
       
    		fact.addIO("clk", "input");

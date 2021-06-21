@@ -2,6 +2,7 @@
 
 VerilogFactory::VerilogFactory() {
 	snippet[ALWAYS] = "always @(posedge clk) begin";
+	snippet[ALWAYS_ASTERIK] = "always @(*) begin";
 	snippet[RESET0] = "if (rst == 1\'b0) begin";
 	snippet[RESET1] = "if (rst == 1\'b1) begin";
 	snippet[END] = "end";
@@ -1263,6 +1264,70 @@ std::string VerilogFactory::getMulLogic_4_Way_TCM_Step_8(int width1, int width2,
     tmp = tmp + scoper(2, "end\n");
     return tmp; // no pipelining version
    }
+}
+
+// Booth Multiplier Step 1
+std::string VerilogFactory::getMulLogic_Booth_Step_1(int width1, int width2, int count, int pipeline) {
+	std::string tmp;
+
+	tmp = "if (rst)\n";
+	tmp = tmp + "\tcount <= " + std::to_string(count) + "'d0;\n";
+	tmp = tmp + "else if (|count)\n";
+	tmp = tmp + "\tcount <= (count - 1);\n";
+	tmp = tmp + "else\n";
+	tmp = tmp + "\tcount <= " + std::to_string(count) + "'d" + std::to_string(width1) + ";\n";
+	return tmp; 
+}
+
+// Booth Multiplier Step 2
+std::string VerilogFactory::getMulLogic_Booth_Step_2(int width1, int width2, int pipeline) {
+	std::string tmp;
+
+	tmp = "if (rst)\n";
+	tmp = tmp + "\tmul_w_signguard <= " + std::to_string(width1) + "'d0;\n";
+	tmp = tmp + "else\n";
+	tmp = tmp + "\tmul_w_signguard <= {a[" + std::to_string(width1) + " - 1], a};\n";
+	return tmp; 
+}
+
+// Booth Multiplier Step 3
+std::string VerilogFactory::getMulLogic_Booth_Step_3(int width1, int width2, int pipeline) {
+	std::string tmp;
+
+	tmp = "case (mul_ab1[1:0])\n";
+	tmp = tmp + "\t2'b01     : add_w_signguard <= mul_ab1[" + std::to_string((2*width1) + 1) + ":" + std::to_string(width1 + 1) + "] + mul_w_signguard;\n";
+	tmp = tmp + "\t2'b10     : add_w_signguard <= mul_ab1[" + std::to_string((2*width1) + 1) + ":" + std::to_string(width1 + 1) + "] - mul_w_signguard;\n";
+	tmp = tmp + "\tdefault   : add_w_signguard <= mul_ab1[" + std::to_string((2*width1) + 1) + ":" + std::to_string(width1 + 1) + "];\n";
+	tmp = tmp + "endcase\n";
+	return tmp; 
+}
+
+// Booth Multiplier Step 4
+std::string VerilogFactory::getMulLogic_Booth_Step_4(int width1, int width2, int pipeline) {
+	std::string tmp;
+
+	tmp = "if (rst)\n";
+	tmp = tmp + "\tmul_ab1 <= " + std::to_string(2*width1+1) + "'d0;\n";
+	tmp = tmp + "else if (|count)\n";
+	tmp = tmp + "\tmul_ab1 <= {add_w_signguard[" + std::to_string(width1) + "], add_w_signguard, mul_ab1[" + std::to_string(width1) + ":1]};\n";
+	tmp = tmp + "else\n";
+	tmp = tmp + "\tmul_ab1 <= {b, 1'b0};\n";
+	return tmp; 
+}
+
+// Booth Multiplier Step 5
+std::string VerilogFactory::getMulLogic_Booth_Step_5(int width1, int width2, int pipeline) {
+	std::string tmp;
+	std::string regname = "c";
+
+	if (pipeline > 1){
+		regname = "c_temp_" + std::to_string(pipeline-1);
+	}
+	tmp = "if (rst)\n";
+	tmp = tmp + "\t"+ regname +" <= " + std::to_string(2*width1-1) + "'d0;\n";
+	tmp = tmp + "else if (count == 1)\n";
+	tmp = tmp + "\t" + regname +" <= {add_w_signguard[" + std::to_string(width1) + "], add_w_signguard, mul_ab1[" + std::to_string(width1) + ":2]};\n";
+	return tmp; 
 }
 
 // sbm_digitized FSM --< Sequential logic

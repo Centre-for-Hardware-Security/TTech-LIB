@@ -96,6 +96,11 @@ class VerilogFactory {
     std::string getMulLogic_4_Way_TCM_Step_6_part_3(int width1, int width2, int pipeline);
     std::string getMulLogic_4_Way_TCM_Step_7(int width1, int width2, int pipeline);
     std::string getMulLogic_4_Way_TCM_Step_8(int width1, int width2, int pipeline);
+	std::string getMulLogic_Booth_Step_1(int width1, int width2, int count, int pipeline);
+	std::string getMulLogic_Booth_Step_2(int width1, int width2, int pipeline);
+	std::string getMulLogic_Booth_Step_3(int width1, int width2, int pipeline);
+	std::string getMulLogic_Booth_Step_4(int width1, int width2, int pipeline);
+	std::string getMulLogic_Booth_Step_5(int width1, int width2, int pipeline);
     std::string getMulLogic_sbm_digitized_FSM_sequential_logic(int width1, int width2, int digit_size, int pipeline);
     std::string getMulLogic_sbm_digitized_FSM_combinational_logic(int width1, int width2, int digit_size, int pipeline);
     std::string getMulLogic_multiplier_inside_sbm_digitized(int width1, int width2, int digit_size, int pipeline);
@@ -104,7 +109,8 @@ class VerilogFactory {
 	
 	std::map<int, std::string> snippet;
 		enum {
-			ALWAYS, 
+			ALWAYS,
+			ALWAYS_ASTERIK,			
 			RESET0,
 			RESET1,
 			END,
