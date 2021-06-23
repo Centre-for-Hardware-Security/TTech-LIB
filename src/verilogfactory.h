@@ -35,10 +35,11 @@ class VerilogFactory {
 		void addParameter(const std::string name, int width);     // include parameter
 
 		void genTempVars(int pipeline, bool inputs);
-        
-		std::string getModuleDefinition();
-		std::string getIODefinition();
-		std::string getInternalDefinition();       
+	std::string BoothPipeline(int pipeline, int width1);
+       
+	std::string getModuleDefinition();
+	std::string getIODefinition();
+	std::string getInternalDefinition();       
     std::string getInternalDefinitionWire();  
     std::string getInternalDefinitionParameter(); 
     std::string getInternalDefinition_SetFirst_OperandSize_for_sbm_digitized();
@@ -55,14 +56,14 @@ class VerilogFactory {
     std::string getInternalDefinitionAssignSetLSB_as_m_times_2_over_4();
     std::string getInternalDefinitionAssignSetLSB_as_m_times_3_over_4();
     std::string getTempVars(int pipeline);
-		std::string getResetStatement(bool partial);
-		std::string getMulLogicSimple(int pipeline);
-		std::string getMulLogicSchoolbook(int width1, int width2, int pipeline);
+	std::string getResetStatement(bool partial);
+	std::string getMulLogicSimple(int pipeline);
+	std::string getMulLogicSchoolbook(int width1, int width2, int pipeline);
     std::string getMulLogic_2_Way_Karatsuba_Step_1(int width1, int width2, int pipeline);
     std::string getMulLogic_2_Way_Karatsuba_Step_2(int width1, int width2, int pipeline);
     std::string getMulLogic_2_Way_Karatsuba_Step_3(int width1, int width2, int pipeline);
     std::string getMulLogic_3_Way_TCM_Step_1(int width1, int width2, int pipeline); 
-		std::string getMulLogic_3_Way_TCM_Step_2_part_1(int width1, int width2, int pipeline);
+	std::string getMulLogic_3_Way_TCM_Step_2_part_1(int width1, int width2, int pipeline);
     std::string getMulLogic_3_Way_TCM_Step_2_part_2(int width1, int width2, int pipeline);
     std::string getMulLogic_3_Way_TCM_Step_2_part_3(int width1, int width2, int pipeline);
     std::string getMulLogic_3_Way_TCM_Step_3_part_1(int width1, int width2, int pipeline);

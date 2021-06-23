@@ -345,7 +345,8 @@ void VerilogFactory::genTempVars(int pipeline, bool inputs) { // this function c
 	auto l = _iowidths.begin();
 	int times = pipeline - 1;
 	
-	while (times != 0) {
+
+		while (times != 0) {
 		while (i != _ionames.end()) {
 			if (inputs) {
 				if (((*j) == "input") && ((*k) == "regular")) {
@@ -401,6 +402,27 @@ std::string VerilogFactory::getTempVars(int pipeline) {
 		k++;
 	}
 
+	return tmp;
+}
+
+std::string VerilogFactory::BoothPipeline(int pipeline, int width1) {
+	std::string tmp;
+	int times;
+	std::string regname = "c";
+
+	if (pipeline > 1) { // ... but if pipelined assignments are to temporary reg
+		times = pipeline - 1;
+		while (times != 0) {
+			std::string range = "[" + std::to_string(width1 - 1) + ":0]";
+			std::string name = "c_temp_" + std::to_string(times);
+			tmp = tmp + "reg " + range + " " + name + ";\n";
+			times--;
+		}
+	}
+	else{
+		return "// no pipeline vars";
+	}
+        
 	return tmp;
 }
 
@@ -532,9 +554,9 @@ std::string VerilogFactory::getMulLogic_2_Way_Karatsuba_Step_2(int width1, int w
 	std::string tmp;
 
 	tmp = "if (rst) begin\n";
-    	tmp = tmp + "\tmul_b1d1 <= " + std::to_string(width1) + "'d0;\n";
-    	tmp = tmp + "\tcounter_b1d1 <= " + std::to_string(width1/2) + "'d0;\n";
-    	tmp = tmp + "end\n";
+    tmp = tmp + "\tmul_b1d1 <= " + std::to_string(width1) + "'d0;\n";
+    tmp = tmp + "\tcounter_b1d1 <= " + std::to_string(width1/2) + "'d0;\n";
+    tmp = tmp + "end\n";
     
 	tmp = tmp + "else if (counter_b1d1 < " + std::to_string(width1/2+1) + ") begin\n";
 	tmp = tmp + "\tif (b[counter_b1d1] == 1'b1) begin\n";
@@ -555,10 +577,10 @@ std::string VerilogFactory::getMulLogic_2_Way_Karatsuba_Step_3(int width1, int w
 	}
 
 	tmp = "if (rst) begin\n";
-    	tmp = tmp + "\t" + regname + " = " + std::to_string(width1+width2) + "'d0;\n";
-    	tmp = tmp + "\tmul_sum_a1b1_sum_c1d1 = " + std::to_string(width1+2) + "'d0;\n";
-    	tmp = tmp + "\tcounter_sum_a1b1_c1d1 = " + std::to_string((width1/2)+2) + "'d0;\n";
-    	tmp = tmp + "end\n";
+    tmp = tmp + "\t" + regname + " = " + std::to_string(width1+width2) + "'d0;\n";
+    tmp = tmp + "\tmul_sum_a1b1_sum_c1d1 = " + std::to_string(width1+2) + "'d0;\n";
+    tmp = tmp + "\tcounter_sum_a1b1_c1d1 = " + std::to_string((width1/2)+2) + "'d0;\n";
+    tmp = tmp + "end\n";
     
 	tmp = tmp + "else if (counter_sum_a1b1_c1d1 < " + std::to_string(width1/2+1) + ") begin\n";
 	tmp = tmp + "\tif (sum_a1b1[counter_sum_a1b1_c1d1] == 1'b1) begin\n";
@@ -569,9 +591,9 @@ std::string VerilogFactory::getMulLogic_2_Way_Karatsuba_Step_3(int width1, int w
 	tmp = tmp + "end\n";
    
 	tmp = tmp + regname + " = mul_sum_a1b1_sum_c1d1 - mul_b1d1 - mul_a1c1;\n";
-    	tmp = tmp + regname + " = " + regname + " << " + std::to_string(width1/2) + ";\n";
-    	tmp = tmp + regname + " = " + regname + " ^ (mul_a1c1 << " + std::to_string(width1) + ");\n";
-    	tmp = tmp + regname + " = " + regname + " ^ mul_b1d1;\n";
+    tmp = tmp + regname + " = " + regname + " << " + std::to_string(width1/2) + ";\n";
+    tmp = tmp + regname + " = " + regname + " ^ (mul_a1c1 << " + std::to_string(width1) + ");\n";
+    tmp = tmp + regname + " = " + regname + " ^ mul_b1d1;\n";
         
 	return tmp;
 }
@@ -579,121 +601,115 @@ std::string VerilogFactory::getMulLogic_2_Way_Karatsuba_Step_3(int width1, int w
 // 3_Way_TCM Step 1
 std::string VerilogFactory::getMulLogic_3_Way_TCM_Step_1(int width1, int width2, int pipeline) {
 	std::string tmp;
-
-	if (pipeline == 1) {  
-		tmp = scoper(2, "if (rst) begin\n");
-    		tmp = tmp + scoper(3, "d <= " + std::to_string(width1) + "'d0;\n");
-    		tmp = tmp + scoper(3, "counter_d <= " + std::to_string(width1/3) + "'d0;\n");
-    		tmp = tmp + scoper(2, "end\n");
-    		
-    		tmp = tmp + scoper(2, "else if (counter_d < " + std::to_string(width1/3+1) + ") begin\n");
-		tmp = tmp + scoper(3, "if (a2[counter_d] == 1'b1) begin\n");
-		tmp = tmp + scoper(4, "d <= d ^ (b2 << counter_d);\n");
-		tmp = tmp + scoper(4, "counter_d <= counter_d + 1;\n");
-		tmp = tmp + scoper(3, "end\n");
-		tmp = tmp + scoper(4, "counter_d <= counter_d + 1;\n");
-		tmp = tmp + scoper(2, "end\n");
-		return tmp; // no pipelining version
-	}
+  
+	tmp = "if (rst) begin\n";
+    tmp = tmp + "\td <= " + std::to_string(width1) + "'d0;\n";
+    tmp = tmp + "\tcounter_d <= " + std::to_string(width1/3) + "'d0;\n";
+    tmp = tmp + "end\n";    		
+    tmp = tmp + "else if (counter_d < " + std::to_string(width1/3+1) + ") begin\n";
+	tmp = tmp + "\tif (a2[counter_d] == 1'b1) begin\n";
+	tmp = tmp + "\t\td <= d ^ (b2 << counter_d);\n";
+	tmp = tmp + "\t\tcounter_d <= counter_d + 1;\n";
+	tmp = tmp + "\tend\n";
+	tmp = tmp + "\tcounter_d <= counter_d + 1;\n";
+	tmp = tmp + "end\n";
+	
+	return tmp; // no pipelining version
 }
 
 // 3_Way_TCM Step 2 (Part 1)
 std::string VerilogFactory::getMulLogic_3_Way_TCM_Step_2_part_1(int width1, int width2, int pipeline) {
 	std::string tmp;
-
-	if (pipeline == 1) {  
-    tmp = scoper(2, "if (rst) begin\n");
-    tmp = tmp + scoper(3, "e1_mul <= " + std::to_string(width1) + "'d0;\n");
-    tmp = tmp + scoper(3, "counter_e1 <= " + std::to_string(width1/3) + "'d0;\n");
-    tmp = tmp + scoper(2, "end\n");
+ 
+    tmp = tmp + "if (rst) begin\n";
+    tmp = tmp + "\te1_mul <= " + std::to_string(width1) + "'d0;\n";
+    tmp = tmp + "\tcounter_e1 <= " + std::to_string(width1/3) + "'d0;\n";
+    tmp = tmp + "end\n";
     
-		tmp = tmp + scoper(1, "else if (counter_e1 < " + std::to_string(width1/3+1) + ") begin\n");
-		tmp = tmp + scoper(2, "if (a1[counter_e1] == 1'b1) begin\n");
-		tmp = tmp + scoper(3, "e1_mul <= e1_mul ^ (b2 << counter_e1);\n");
-    tmp = tmp + scoper(3, "counter_e1 <= counter_e1 + 1;\n");
-		tmp = tmp + scoper(2, "end\n");
-		tmp = tmp + scoper(3, "counter_e1 <= counter_e1 + 1;\n");
-		tmp = tmp + scoper(1, "end\n");
-    return tmp; // no pipelining version
-   }
+	tmp = tmp + "else if (counter_e1 < " + std::to_string(width1/3+1) + ") begin\n";
+	tmp = tmp + "\tif (a1[counter_e1] == 1'b1) begin\n";
+	tmp = tmp + "\t\te1_mul <= e1_mul ^ (b2 << counter_e1);\n";
+    tmp = tmp + "\t\tcounter_e1 <= counter_e1 + 1;\n";
+	tmp = tmp + "\tend\n";
+	tmp = tmp + "\tcounter_e1 <= counter_e1 + 1;\n";
+	tmp = tmp + "end\n";
+    
+	return tmp; // no pipelining version
 }
 
 // 3_Way_TCM Step 2 (Part 2)
 std::string VerilogFactory::getMulLogic_3_Way_TCM_Step_2_part_2(int width1, int width2, int pipeline) {
 	std::string tmp;
-
-	if (pipeline == 1) {  
-    tmp = scoper(2, "if (rst) begin\n");
-    tmp = tmp + scoper(3, "e2_mul <= " + std::to_string(width1) + "'d0;\n");
-    tmp = tmp + scoper(3, "counter_e2 <= " + std::to_string(width1/3) + "'d0;\n");
-    tmp = tmp + scoper(2, "end\n");
+ 
+    tmp = "if (rst) begin\n";
+    tmp = tmp + "\te2_mul <= " + std::to_string(width1) + "'d0;\n";
+    tmp = tmp + "\tcounter_e2 <= " + std::to_string(width1/3) + "'d0;\n";
+    tmp = tmp + "end\n";
     
-		tmp = tmp + scoper(1, "else if (counter_e2 < " + std::to_string(width1/3+1) + ") begin\n");
-		tmp = tmp + scoper(2, "if (a2[counter_e1] == 1'b1) begin\n");
-		tmp = tmp + scoper(3, "e2_mul <= e2_mul ^ (b1 << counter_e2);\n");
-    tmp = tmp + scoper(3, "counter_e2 <= counter_e2 + 1;\n");
-		tmp = tmp + scoper(2, "end\n");
-		tmp = tmp + scoper(3, "counter_e2 <= counter_e2 + 1;\n");
-		tmp = tmp + scoper(1, "end\n");
-    return tmp; // no pipelining version
-   }
+	tmp = tmp + "else if (counter_e2 < " + std::to_string(width1/3+1) + ") begin\n";
+	tmp = tmp + "\tif (a2[counter_e1] == 1'b1) begin\n";
+	tmp = tmp + "\t\te2_mul <= e2_mul ^ (b1 << counter_e2);\n";
+	tmp = tmp + "\t\tcounter_e2 <= counter_e2 + 1;\n";
+	tmp = tmp + "end\n";
+	tmp = tmp + "\tcounter_e2 <= counter_e2 + 1;\n";
+	tmp = tmp + "end\n";
+    
+	return tmp;
+   
 }
 
 // 3_Way_TCM Step 2 (Part 3)
 std::string VerilogFactory::getMulLogic_3_Way_TCM_Step_2_part_3(int width1, int width2, int pipeline) {
 	std::string tmp;
-
-	if (pipeline == 1) {  
-    tmp = scoper(2, "if (rst) begin\n");
-    tmp = tmp + scoper(3, "e = " + std::to_string(width1) + "'d0;\n");
-    tmp = tmp + scoper(2, "end\n");
-    tmp = tmp + scoper(2, "else begin\n");
-		tmp = tmp + scoper(3, "e = e1_mul ^ e2_mul; \n");
-    tmp = tmp + scoper(2, "end\n");
-    return tmp; // no pipelining version
-   }
+ 
+    tmp = "if (rst) begin\n";
+    tmp = tmp + "e = " + std::to_string(width1) + "'d0;\n";
+    tmp = tmp + "end\n";
+    tmp = tmp + "else begin\n";
+	tmp = tmp + "e = e1_mul ^ e2_mul; \n";
+    tmp = tmp + "end\n";
+    
+	return tmp;
 }
 
 // 3_Way_TCM Step 3 (Part 1)
 std::string VerilogFactory::getMulLogic_3_Way_TCM_Step_3_part_1(int width1, int width2, int pipeline) {
 	std::string tmp;
-
-	if (pipeline == 1) {  
-    tmp = scoper(2, "if (rst) begin\n");
-    tmp = tmp + scoper(3, "f1_mul = " + std::to_string(width1) + "'d0;\n");
-    tmp = tmp + scoper(3, "counter_f1 = " + std::to_string(width1/3) + "'d0;\n");
-    tmp = tmp + scoper(2, "end\n");
+ 
+    tmp = "if (rst) begin\n";
+    tmp = tmp + "f1_mul = " + std::to_string(width1) + "'d0;\n";
+    tmp = tmp + "counter_f1 = " + std::to_string(width1/3) + "'d0;\n";
+    tmp = tmp + "end\n";
     
-		tmp = tmp + scoper(2, "else if (counter_f1 < " + std::to_string(width1/3+1) + ") begin\n");
-		tmp = tmp + scoper(2, "if (a0[counter_f1] == 1'b1) begin\n");
-		tmp = tmp + scoper(3, "f1_mul = f1_mul ^ (b2 << counter_f1);\n");
-    tmp = tmp + scoper(3, "counter_f1 = counter_f1 + 1;\n");
-		tmp = tmp + scoper(2, "end\n");
-		tmp = tmp + scoper(3, "counter_f1 = counter_f1 + 1;\n");
-		tmp = tmp + scoper(1, "end\n");
-    return tmp; // no pipelining version
-   }
+	tmp = tmp + "else if (counter_f1 < " + std::to_string(width1/3+1) + ") begin\n";
+	tmp = tmp + "if (a0[counter_f1] == 1'b1) begin\n";
+	tmp = tmp + "f1_mul = f1_mul ^ (b2 << counter_f1);\n";
+    tmp = tmp + "counter_f1 = counter_f1 + 1;\n";
+	tmp = tmp + "\tend\n";
+	tmp = tmp + "counter_f1 = counter_f1 + 1;\n";
+	tmp = tmp + "end\n";
+    
+	return tmp;
 }
 
 // 3_Way_TCM Step 3 (Part 2)
 std::string VerilogFactory::getMulLogic_3_Way_TCM_Step_3_part_2(int width1, int width2, int pipeline) {
 	std::string tmp;
 
-	if (pipeline == 1) { 
-    tmp = scoper(2, "if (rst) begin\n");
-    tmp = tmp + scoper(3, "f2_mul = " + std::to_string(width1) + "'d0;\n");
-    tmp = tmp + scoper(3, "counter_f2 = " + std::to_string(width1/3) + "'d0;\n");
-    tmp = tmp + scoper(2, "end\n"); 
+    tmp = "if (rst) begin\n";
+    tmp = tmp + "f2_mul = " + std::to_string(width1) + "'d0;\n";
+    tmp = tmp + "counter_f2 = " + std::to_string(width1/3) + "'d0;\n";
+    tmp = tmp + "end\n"; 
   
-		tmp = tmp + scoper(1, "if (counter_f2 < " + std::to_string(width1/3+1) + ") begin\n");
-		tmp = tmp + scoper(2, "if (a1[counter_f2] == 1'b1) begin\n");
-		tmp = tmp + scoper(3, "f2_mul = f2_mul ^ (b1 << counter_f2);\n");
-    tmp = tmp + scoper(3, "counter_f2 = counter_f2 + 1;\n");
-		tmp = tmp + scoper(2, "end\n");
-		tmp = tmp + scoper(3, "counter_f2 = counter_f2 + 1;\n");
-		tmp = tmp + scoper(1, "end\n");
-    return tmp; // no pipelining version
-   }
+	tmp = tmp + "if (counter_f2 < " + std::to_string(width1/3+1) + ") begin\n";
+	tmp = tmp + "if (a1[counter_f2] == 1'b1) begin\n";
+	tmp = tmp + "f2_mul = f2_mul ^ (b1 << counter_f2);\n";
+    tmp = tmp + "counter_f2 = counter_f2 + 1;\n";
+	tmp = tmp + "end\n";
+	tmp = tmp + "counter_f2 = counter_f2 + 1;\n";
+	tmp = tmp + "end\n";
+    
+	return tmp; // no pipelining version
 }
 
 // 3_Way_TCM Step 3 (Part 3)
@@ -1275,7 +1291,7 @@ std::string VerilogFactory::getMulLogic_Booth_Step_1(int width1, int width2, int
 	tmp = tmp + "else if (|count)\n";
 	tmp = tmp + "\tcount <= (count - 1);\n";
 	tmp = tmp + "else\n";
-	tmp = tmp + "\tcount <= " + std::to_string(count) + "'d" + std::to_string(width1) + ";\n";
+	tmp = tmp + "\tcount <= " + std::to_string(count) + "'d" + std::to_string(width1 - 1) + ";\n";
 	return tmp; 
 }
 
@@ -1284,20 +1300,25 @@ std::string VerilogFactory::getMulLogic_Booth_Step_2(int width1, int width2, int
 	std::string tmp;
 
 	tmp = "if (rst)\n";
-	tmp = tmp + "\tmul_w_signguard <= " + std::to_string(width1) + "'d0;\n";
+	tmp = tmp + "\tmul_w_signguard <= " + std::to_string(width1 - 1) + "'d0;\n";
 	tmp = tmp + "else\n";
-	tmp = tmp + "\tmul_w_signguard <= {a[" + std::to_string(width1) + " - 1], a};\n";
+	tmp = tmp + "\tmul_w_signguard <= {a[" + std::to_string(width1 - 1) + " - 1], a};\n";
 	return tmp; 
 }
 
 // Booth Multiplier Step 3
 std::string VerilogFactory::getMulLogic_Booth_Step_3(int width1, int width2, int pipeline) {
 	std::string tmp;
+	std::string regname = "add_w_signguard";
+
+	if (pipeline > 1){
+		regname = "c_temp_" + std::to_string(pipeline-1);
+	}
 
 	tmp = "case (mul_ab1[1:0])\n";
-	tmp = tmp + "\t2'b01     : add_w_signguard <= mul_ab1[" + std::to_string((2*width1) + 1) + ":" + std::to_string(width1 + 1) + "] + mul_w_signguard;\n";
-	tmp = tmp + "\t2'b10     : add_w_signguard <= mul_ab1[" + std::to_string((2*width1) + 1) + ":" + std::to_string(width1 + 1) + "] - mul_w_signguard;\n";
-	tmp = tmp + "\tdefault   : add_w_signguard <= mul_ab1[" + std::to_string((2*width1) + 1) + ":" + std::to_string(width1 + 1) + "];\n";
+	tmp = tmp + "\t2'b01     : " + regname + " <= mul_ab1[" + std::to_string((2*width1) - 1) + ":" + std::to_string(width1) + "] + mul_w_signguard;\n";
+	tmp = tmp + "\t2'b10     : " + regname + " <= mul_ab1[" + std::to_string((2*width1) - 1) + ":" + std::to_string(width1) + "] - mul_w_signguard;\n";
+	tmp = tmp + "\tdefault   : " + regname + " <= mul_ab1[" + std::to_string((2*width1) - 1) + ":" + std::to_string(width1) + "];\n";
 	tmp = tmp + "endcase\n";
 	return tmp; 
 }
@@ -1305,11 +1326,16 @@ std::string VerilogFactory::getMulLogic_Booth_Step_3(int width1, int width2, int
 // Booth Multiplier Step 4
 std::string VerilogFactory::getMulLogic_Booth_Step_4(int width1, int width2, int pipeline) {
 	std::string tmp;
+	std::string regname = "add_w_signguard";
+
+	if (pipeline > 1){
+		regname = "c_temp_" + std::to_string(pipeline-1);
+	}
 
 	tmp = "if (rst)\n";
-	tmp = tmp + "\tmul_ab1 <= " + std::to_string(2*width1+1) + "'d0;\n";
+	tmp = tmp + "\tmul_ab1 <= " + std::to_string(2*width1-1) + "'d0;\n";
 	tmp = tmp + "else if (|count)\n";
-	tmp = tmp + "\tmul_ab1 <= {add_w_signguard[" + std::to_string(width1) + "], add_w_signguard, mul_ab1[" + std::to_string(width1) + ":1]};\n";
+	tmp = tmp + "\tmul_ab1 <= {" + regname + "[" + std::to_string(width1 - 1) + "], " + regname + ", mul_ab1[" + std::to_string(width1 - 1) + ":1]};\n";
 	tmp = tmp + "else\n";
 	tmp = tmp + "\tmul_ab1 <= {b, 1'b0};\n";
 	return tmp; 
@@ -1318,15 +1344,15 @@ std::string VerilogFactory::getMulLogic_Booth_Step_4(int width1, int width2, int
 // Booth Multiplier Step 5
 std::string VerilogFactory::getMulLogic_Booth_Step_5(int width1, int width2, int pipeline) {
 	std::string tmp;
-	std::string regname = "c";
+	std::string regname = "add_w_signguard";
 
 	if (pipeline > 1){
 		regname = "c_temp_" + std::to_string(pipeline-1);
 	}
 	tmp = "if (rst)\n";
-	tmp = tmp + "\t"+ regname +" <= " + std::to_string(2*width1-1) + "'d0;\n";
+	tmp = tmp + "\tc <= " + std::to_string(2*width1-1) + "'d0;\n";
 	tmp = tmp + "else if (count == 1)\n";
-	tmp = tmp + "\t" + regname +" <= {add_w_signguard[" + std::to_string(width1) + "], add_w_signguard, mul_ab1[" + std::to_string(width1) + ":2]};\n";
+	tmp = tmp + "\tc <= {" + regname + "[" + std::to_string(width1 - 1) + "], " + regname + ", mul_ab1[" + std::to_string(width1 - 1) + ":2]};\n";
 	return tmp; 
 }
 
