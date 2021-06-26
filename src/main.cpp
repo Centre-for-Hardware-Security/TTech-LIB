@@ -351,6 +351,7 @@ void genMultipliers() {
       
 			vlog << fact.getModuleDefinition() << endl;
 			vlog << fact.getIODefinition() << endl;
+			vlog << "// Pipeline register declaration " << endl;
 			vlog << fact.getTempVars(mul.pipeline) << endl; // pipelined inputs are declared here
 			vlog << "// Wires declaration " << endl;
 			vlog << fact.getInternalDefinitionWire() << endl;
@@ -415,6 +416,8 @@ void genMultipliers() {
 			fact.addIO("b", "input", mul.width2);
 			fact.addIO("c", "output reg", (mul.width1 + mul.width2));
 			
+			fact.genTempVars(mul.pipeline, false);
+			
       // To split the input operands into three equal sizes
       //vlog << "// Here, we split the input operands into three equal sizes" << endl;
       fact.addWire("a0", (mul.width1/3)); // include wire
@@ -463,8 +466,9 @@ void genMultipliers() {
       
       
       vlog << fact.getModuleDefinition() << endl;
-			vlog << fact.getIODefinition() << endl;
-			//vlog << fact.getTempVars(mul.pipeline) << endl; // pipelined inputs are declared here
+	  vlog << fact.getIODefinition() << endl;
+	  vlog << "// Pipeline register declaration " << endl;
+	  vlog << fact.getTempVars(mul.pipeline) << endl; // pipelined inputs are declared here
       vlog << "// Wires declaration " << endl;
       vlog << fact.getInternalDefinitionWire() << endl;
       vlog << "// Registers declaration " << endl;
@@ -506,63 +510,83 @@ void genMultipliers() {
       // Step_2 (Part-3)
       vlog << endl << "// Step-2 (Part-3) of 3-Way TCM Multiplier" << endl;
       vlog << fact.snippet[VerilogFactory::ALWAYS] << endl;
-      vlog << VerilogFactory::scoper(1, fact.getMulLogic_3_Way_TCM_Step_2_part_3(mul.width1, mul.width2, mul.pipeline));
+      vlog << VerilogFactory::scoper(1, fact.getMulLogic_3_Way_TCM_Step_2_part_3(mul.width1, mul.width2, mul.pipeline)) << endl;
       vlog << fact.snippet[VerilogFactory::END] << endl;
             
       // Step_3 (Part-1)
       vlog << endl << "// Step-3 (Part-1) of 3-Way TCM Multiplier" << endl;
       vlog << fact.snippet[VerilogFactory::ALWAYS] << endl;
-      vlog << VerilogFactory::scoper(1, fact.getMulLogic_3_Way_TCM_Step_3_part_1(mul.width1, mul.width2, mul.pipeline));
+      vlog << VerilogFactory::scoper(1, fact.getMulLogic_3_Way_TCM_Step_3_part_1(mul.width1, mul.width2, mul.pipeline)) << endl;
       vlog << fact.snippet[VerilogFactory::END] << endl;
       
       // Step_3 (Part-2)
       vlog << endl << "// Step-3 (Part-2) of 3-Way TCM Multiplier" << endl;
       vlog << fact.snippet[VerilogFactory::ALWAYS] << endl;
-      vlog << VerilogFactory::scoper(1, fact.getMulLogic_3_Way_TCM_Step_3_part_2(mul.width1, mul.width2, mul.pipeline));
+      vlog << VerilogFactory::scoper(1, fact.getMulLogic_3_Way_TCM_Step_3_part_2(mul.width1, mul.width2, mul.pipeline)) << endl;
       vlog << fact.snippet[VerilogFactory::END] << endl;
       
       // Step_3 (Part-3)
       vlog << endl << "// Step-3 (Part-3) of 3-Way TCM Multiplier" << endl;
       vlog << fact.snippet[VerilogFactory::ALWAYS] << endl;
-      vlog << fact.getMulLogic_3_Way_TCM_Step_3_part_3(mul.width1, mul.width2, mul.pipeline);
+      vlog << VerilogFactory::scoper(1, fact.getMulLogic_3_Way_TCM_Step_3_part_3(mul.width1, mul.width2, mul.pipeline)) << endl;
       vlog << fact.snippet[VerilogFactory::END] << endl;
       
       // Step_3 (Part-4)
       vlog << endl << "// Step-3 (Part-4) of 3-Way TCM Multiplier" << endl;
       vlog << fact.snippet[VerilogFactory::ALWAYS] << endl;
-      vlog << VerilogFactory::scoper(1, fact.getMulLogic_3_Way_TCM_Step_3_part_4(mul.width1, mul.width2, mul.pipeline));
+      vlog << VerilogFactory::scoper(1, fact.getMulLogic_3_Way_TCM_Step_3_part_4(mul.width1, mul.width2, mul.pipeline)) << endl;
       vlog << fact.snippet[VerilogFactory::END] << endl;      
       
       // Step_4 (Part-1)
       vlog << endl << "// Step-4 (Part-1) of 3-Way TCM Multiplier" << endl;
       vlog << fact.snippet[VerilogFactory::ALWAYS] << endl;
-      vlog << fact.getMulLogic_3_Way_TCM_Step_4_part_1(mul.width1, mul.width2, mul.pipeline);
+      vlog << VerilogFactory::scoper(1, fact.getMulLogic_3_Way_TCM_Step_4_part_1(mul.width1, mul.width2, mul.pipeline)) << endl;
       vlog << fact.snippet[VerilogFactory::END] << endl;
       
       // Step_4 (Part-2)
       vlog << endl << "// Step-4 (Part-2) of 3-Way TCM Multiplier" << endl;
       vlog << fact.snippet[VerilogFactory::ALWAYS] << endl;
-      vlog << fact.getMulLogic_3_Way_TCM_Step_4_part_2(mul.width1, mul.width2, mul.pipeline);
+      vlog << VerilogFactory::scoper(1, fact.getMulLogic_3_Way_TCM_Step_4_part_2(mul.width1, mul.width2, mul.pipeline)) << endl;
       vlog << fact.snippet[VerilogFactory::END] << endl;
       
       // Step_4 (Part-3)
       vlog << endl << "// Step-4 (Part-3) of 3-Way TCM Multiplier" << endl;
       vlog << fact.snippet[VerilogFactory::ALWAYS] << endl;
-      vlog << fact.getMulLogic_3_Way_TCM_Step_4_part_3(mul.width1, mul.width2, mul.pipeline);
+      vlog << VerilogFactory::scoper(1, fact.getMulLogic_3_Way_TCM_Step_4_part_3(mul.width1, mul.width2, mul.pipeline)) << endl;
       vlog << fact.snippet[VerilogFactory::END] << endl;      
       
       // Step_5
       vlog << endl << "// Step-5 of 3-Way TCM Multiplier" << endl;
       vlog << fact.snippet[VerilogFactory::ALWAYS] << endl;
-      vlog << fact.getMulLogic_3_Way_TCM_Step_5(mul.width1, mul.width2, mul.pipeline);
+      vlog << VerilogFactory::scoper(1, fact.getMulLogic_3_Way_TCM_Step_5(mul.width1, mul.width2, mul.pipeline)) << endl;
       vlog << fact.snippet[VerilogFactory::END] << endl;      
       
       // Step_6
       vlog << endl << "// Step-6 of 3-Way TCM Multiplier" << endl;
       vlog << fact.snippet[VerilogFactory::ALWAYS] << endl;
-      vlog << fact.getMulLogic_3_Way_TCM_Step_6(mul.width1, mul.width2, mul.pipeline);
-      vlog << fact.snippet[VerilogFactory::END] << endl;      
-			vlog << fact.snippet[VerilogFactory::ENDMODULE] << endl;
+      vlog << VerilogFactory::scoper(1, fact.getMulLogic_3_Way_TCM_Step_6(mul.width1, mul.width2, mul.pipeline)) << endl;
+      vlog << fact.snippet[VerilogFactory::END] << endl;
+
+      			if (mul.pipeline > 1) {
+	      			vlog << endl << "// pipeline stages" << endl;
+      				vlog << fact.snippet[VerilogFactory::ALWAYS] << endl;
+
+				int i = mul.pipeline;
+				std::string temp;
+
+				temp = "c <= c_temp_1;\n";
+      				vlog << VerilogFactory::scoper(1, temp) << endl;
+
+				while (i > 2) {
+					temp = "c_temp_" + std::to_string(i-2) + " <= c_temp_" + std::to_string(i-1) + ";\n";
+	      				vlog << VerilogFactory::scoper(1, temp) << endl;
+      					i--;
+				}
+
+					vlog << fact.snippet[VerilogFactory::END] << endl;
+			}
+			
+	  vlog << fact.snippet[VerilogFactory::ENDMODULE] << endl;
 		}
 
 if (mul.name == "four_way_toom_cook") {
