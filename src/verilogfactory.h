@@ -36,6 +36,7 @@ class VerilogFactory {
 
 		void genTempVars(int pipeline, bool inputs);
 	std::string BoothPipeline(int pipeline, int width1);
+	std::string TCM3Pipeline(int pipeline);
        
 	std::string getModuleDefinition();
 	std::string getIODefinition();
@@ -43,11 +44,11 @@ class VerilogFactory {
     std::string getInternalDefinitionWire();  
     std::string getInternalDefinitionParameter(); 
     std::string getInternalDefinition_SetFirst_OperandSize_for_sbm_digitized();
-    std::string getInternalDefinitionAssignSetMSB_as_m_over_3_minus_1();
-    std::string getInternalDefinitionAssignSetMSB_as_m_times_2_over_3_minus_1(); 
-    std::string getInternalDefinitionAssignSetMSB_as_m_minus_1_for_3_way_TCM(); 
-    std::string getInternalDefinitionAssignSetLSB_as_m_over_3();
-    std::string getInternalDefinitionAssignSetLSB_as_m_times_2_over_3(); 
+    std::string getInternalDefinitionAssignSetMSB_as_m_over_3_minus_1(const std::string operand);
+    std::string getInternalDefinitionAssignSetMSB_as_m_times_2_over_3_minus_1(const std::string operand); 
+    std::string getInternalDefinitionAssignSetMSB_as_m_minus_1_for_3_way_TCM(const std::string operand); 
+    std::string getInternalDefinitionAssignSetLSB_as_m_over_3(const std::string operand);
+    std::string getInternalDefinitionAssignSetLSB_as_m_times_2_over_3(const std::string operand); 
     std::string getInternalDefinitionAssignSetMSB_as_m_over_4();
     std::string getInternalDefinitionAssignSetMSB_as_m_times_2_over_4();
     std::string getInternalDefinitionAssignSetMSB_as_m_times_3_over_4();

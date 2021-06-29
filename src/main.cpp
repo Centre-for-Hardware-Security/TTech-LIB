@@ -267,7 +267,7 @@ void genMultipliers() {
       
 			vlog << fact.getModuleDefinition() << endl;
 			vlog << fact.getIODefinition() << endl;
-			vlog << "// Testing 456" << endl;
+			vlog << "// Pipeine registers" << endl;
 			vlog << fact.BoothPipeline(mul.pipeline, mul.width1) << endl; // pipelined inputs are declared here
 			vlog << fact.getInternalDefinitionWire() << endl;
 			vlog << "// Registers declaration " << endl;
@@ -417,15 +417,16 @@ void genMultipliers() {
 			fact.addIO("c", "output reg", (mul.width1 + mul.width2));
 			
 			fact.genTempVars(mul.pipeline, false);
-			
+	  int width_a = mul.width1 - 1;
+	  int width_b = mul.width2 - 1;
       // To split the input operands into three equal sizes
-      //vlog << "// Here, we split the input operands into three equal sizes" << endl;
-      fact.addWire("a0", (mul.width1/3)); // include wire
-      fact.addWire("a1", (mul.width1/3)+1); // include wire
-      fact.addWire("a2", (mul.width1/3)+1); // include wire
-      fact.addWire("b0", (mul.width1/3)); // include wire
-      fact.addWire("b1", (mul.width1/3)+1); // include wire
-      fact.addWire("b2", (mul.width1/3)+1); // include wire
+      vlog << "// Here, we split the input operands into three equal sizes"  + std::to_string(mul.width1) << endl;
+      fact.addWire("a0", ((width_a/3) - 0) + 1); // include wire
+      fact.addWire("a1", (((width_a*2)/3) - ((width_a/3) + 1)) + 1); // include wire
+      fact.addWire("a2", (width_a - (((width_a*2)/3) + 1)) + 1); // include wire
+      fact.addWire("b0", ((width_b/3) - 0) + 1); // include wire
+      fact.addWire("b1", (((width_b*2)/3) - ((width_b/3) + 1)) + 1); // include wire
+      fact.addWire("b2", (width_b - (((width_b*2)/3) + 1)) + 1); // include wire
             
       // Counters for each step of 3-Way TCM multiplier
       //vlog << "// Counters deceleration for each step of 3-Way TCM multiplier" << endl;
@@ -468,7 +469,8 @@ void genMultipliers() {
       vlog << fact.getModuleDefinition() << endl;
 	  vlog << fact.getIODefinition() << endl;
 	  vlog << "// Pipeline register declaration " << endl;
-	  vlog << fact.getTempVars(mul.pipeline) << endl; // pipelined inputs are declared here
+	  vlog << fact.TCM3Pipeline(mul.pipeline) << endl; // pipelined inputs are declared here
+	  //vlog << fact.getTempVars(mul.pipeline) << endl; // pipelined inputs are declared here
       vlog << "// Wires declaration " << endl;
       vlog << fact.getInternalDefinitionWire() << endl;
       vlog << "// Registers declaration " << endl;
@@ -476,12 +478,14 @@ void genMultipliers() {
       
       // Initial assignments to wires
       vlog << "// Initial assignments to wires" << endl;
-      vlog << "assign a0 = a[" << fact.getInternalDefinitionAssignSetMSB_as_m_over_3_minus_1() << ":0];" << endl;
-      vlog << "assign a1 = a[" << fact.getInternalDefinitionAssignSetMSB_as_m_times_2_over_3_minus_1() << ":" << fact.getInternalDefinitionAssignSetLSB_as_m_over_3() << "];" << endl;
-      vlog << "assign a2 = a[" << fact.getInternalDefinitionAssignSetMSB_as_m_minus_1_for_3_way_TCM() << ":" << fact.getInternalDefinitionAssignSetLSB_as_m_times_2_over_3() << "];" << endl;
-      vlog << "assign b0 = b[" << fact.getInternalDefinitionAssignSetMSB_as_m_over_3_minus_1() << ":0];" << endl;
-      vlog << "assign b1 = b[" << fact.getInternalDefinitionAssignSetMSB_as_m_times_2_over_3_minus_1() << ":" << fact.getInternalDefinitionAssignSetLSB_as_m_over_3() << "];" << endl;
-      vlog << "assign b2 = b[" << fact.getInternalDefinitionAssignSetMSB_as_m_minus_1_for_3_way_TCM() << ":" << fact.getInternalDefinitionAssignSetLSB_as_m_times_2_over_3() << "];" << endl;
+      vlog << "assign a0 = a[" << fact.getInternalDefinitionAssignSetMSB_as_m_over_3_minus_1("a") << ":0];" << endl;
+      vlog << "assign a1 = a[" << fact.getInternalDefinitionAssignSetMSB_as_m_times_2_over_3_minus_1("a") << ":" << fact.getInternalDefinitionAssignSetLSB_as_m_over_3("a") << "];" << endl;
+      vlog << "assign a2 = a[" << fact.getInternalDefinitionAssignSetMSB_as_m_minus_1_for_3_way_TCM("a") << ":" << fact.getInternalDefinitionAssignSetLSB_as_m_times_2_over_3("a") << "];" << endl;
+	  //vlog << "assign a2 = a[" << std::to_string(mul.width1-1) << ":" << fact.getInternalDefinitionAssignSetLSB_as_m_times_2_over_3() << "];" << endl;
+      vlog << "assign b0 = b[" << fact.getInternalDefinitionAssignSetMSB_as_m_over_3_minus_1("b") << ":0];" << endl;
+      vlog << "assign b1 = b[" << fact.getInternalDefinitionAssignSetMSB_as_m_times_2_over_3_minus_1("b") << ":" << fact.getInternalDefinitionAssignSetLSB_as_m_over_3("b") << "];" << endl;
+      vlog << "assign b2 = b[" << fact.getInternalDefinitionAssignSetMSB_as_m_minus_1_for_3_way_TCM("b") << ":" << fact.getInternalDefinitionAssignSetLSB_as_m_times_2_over_3("b") << "];" << endl;
+	  //vlog << "assign b2 = b[" << std::to_string(mul.width2-1) << ":" << fact.getInternalDefinitionAssignSetLSB_as_m_times_2_over_3("b") << "];" << endl;
       
       
       // Step_1
@@ -574,11 +578,11 @@ void genMultipliers() {
 				int i = mul.pipeline;
 				std::string temp;
 
-				temp = "c <= c_temp_1;\n";
+				temp = "c_temp_"+ std::to_string(i-(i-1)) + " <= f;\n";
       				vlog << VerilogFactory::scoper(1, temp) << endl;
 
 				while (i > 2) {
-					temp = "c_temp_" + std::to_string(i-2) + " <= c_temp_" + std::to_string(i-1) + ";\n";
+					temp = "c_temp_" + std::to_string(i-1) + " <= c_temp_" + std::to_string(i-2) + ";\n";
 	      				vlog << VerilogFactory::scoper(1, temp) << endl;
       					i--;
 				}
