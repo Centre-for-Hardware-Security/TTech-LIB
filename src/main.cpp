@@ -416,11 +416,11 @@ void genMultipliers() {
 			fact.addIO("b", "input", mul.width2);
 			fact.addIO("c", "output reg", (mul.width1 + mul.width2));
 			
-			fact.genTempVars(mul.pipeline, false);
+		fact.genTempVars(mul.pipeline, false);
 	  int width_a = mul.width1 - 1;
 	  int width_b = mul.width2 - 1;
       // To split the input operands into three equal sizes
-      vlog << "// Here, we split the input operands into three equal sizes"  + std::to_string(mul.width1) << endl;
+      //vlog << "// Here, we split the input operands into three equal sizes"  + std::to_string(mul.width1) << endl;
       fact.addWire("a0", ((width_a/3) - 0) + 1); // include wire
       fact.addWire("a1", (((width_a*2)/3) - ((width_a/3) + 1)) + 1); // include wire
       fact.addWire("a2", (width_a - (((width_a*2)/3) + 1)) + 1); // include wire
@@ -429,7 +429,7 @@ void genMultipliers() {
       fact.addWire("b2", (width_b - (((width_b*2)/3) + 1)) + 1); // include wire
             
       // Counters for each step of 3-Way TCM multiplier
-      //vlog << "// Counters deceleration for each step of 3-Way TCM multiplier" << endl;
+      vlog << "// Counters deceleration for each step of 3-Way TCM multiplier" << endl;
       fact.addVar("counter_d", (mul.width1/3), false); // will check bits of d
       fact.addVar("counter_e1", (mul.width1/3), false); // will check bits of e1
       fact.addVar("counter_e2", (mul.width1/3), false); // will check bits of e2
@@ -441,7 +441,7 @@ void genMultipliers() {
       fact.addVar("counter_h", (mul.width1/3), false); // will check bits of h
       
       // To store intermediate multiplication results
-      //vlog << "// To store intermediate multiplication results of 3-Way TCM multiplier" << endl;
+      vlog << "// To store intermediate multiplication results of 3-Way TCM multiplier" << endl;
       fact.addVar("d", mul.width1, false); 
       fact.addVar("e1_mul", mul.width1, false);
       fact.addVar("e2_mul", mul.width1, false);
@@ -456,21 +456,10 @@ void genMultipliers() {
       fact.addVar("h", mul.width1, false);
       fact.addVar("temp", (mul.width1 + mul.width2), false);
       
-      //vlog << "assign a0 = a[" << fact.getInternalDefinitionAssignSetMSB_as_m_minus_1() << ":" << fact.getInternalDefinitionAssignSetLSB_as_m_over_2() << "];" << endl;
-    
-      //fact.getAssignonWire(); // first parameter towards left is the destination while another parameter towards right is the source to be copied 
-             
-      
-			//if (mul.pipeline > 1) {
-				//fact.addVar("skip", log2(mul.pipeline - 1) + 1);
-			//}
-      
-      
       vlog << fact.getModuleDefinition() << endl;
 	  vlog << fact.getIODefinition() << endl;
 	  vlog << "// Pipeline register declaration " << endl;
 	  vlog << fact.TCM3Pipeline(mul.pipeline) << endl; // pipelined inputs are declared here
-	  //vlog << fact.getTempVars(mul.pipeline) << endl; // pipelined inputs are declared here
       vlog << "// Wires declaration " << endl;
       vlog << fact.getInternalDefinitionWire() << endl;
       vlog << "// Registers declaration " << endl;
@@ -481,23 +470,16 @@ void genMultipliers() {
       vlog << "assign a0 = a[" << fact.getInternalDefinitionAssignSetMSB_as_m_over_3_minus_1("a") << ":0];" << endl;
       vlog << "assign a1 = a[" << fact.getInternalDefinitionAssignSetMSB_as_m_times_2_over_3_minus_1("a") << ":" << fact.getInternalDefinitionAssignSetLSB_as_m_over_3("a") << "];" << endl;
       vlog << "assign a2 = a[" << fact.getInternalDefinitionAssignSetMSB_as_m_minus_1_for_3_way_TCM("a") << ":" << fact.getInternalDefinitionAssignSetLSB_as_m_times_2_over_3("a") << "];" << endl;
-	  //vlog << "assign a2 = a[" << std::to_string(mul.width1-1) << ":" << fact.getInternalDefinitionAssignSetLSB_as_m_times_2_over_3() << "];" << endl;
       vlog << "assign b0 = b[" << fact.getInternalDefinitionAssignSetMSB_as_m_over_3_minus_1("b") << ":0];" << endl;
       vlog << "assign b1 = b[" << fact.getInternalDefinitionAssignSetMSB_as_m_times_2_over_3_minus_1("b") << ":" << fact.getInternalDefinitionAssignSetLSB_as_m_over_3("b") << "];" << endl;
       vlog << "assign b2 = b[" << fact.getInternalDefinitionAssignSetMSB_as_m_minus_1_for_3_way_TCM("b") << ":" << fact.getInternalDefinitionAssignSetLSB_as_m_times_2_over_3("b") << "];" << endl;
-	  //vlog << "assign b2 = b[" << std::to_string(mul.width2-1) << ":" << fact.getInternalDefinitionAssignSetLSB_as_m_times_2_over_3("b") << "];" << endl;
       
       
       // Step_1
       vlog << endl << "// Step-1 of 3-Way TCM Multiplier" << endl;
       vlog << fact.snippet[VerilogFactory::ALWAYS] << endl;
-			//vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::RESET1]) << endl;
-			//vlog << fact.getResetStatement();
-			//vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::END]) << endl;
-			//vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::ELSEBEGIN]) << endl;
-			vlog << VerilogFactory::scoper(1, fact.getMulLogic_3_Way_TCM_Step_1(mul.width1, mul.width2, mul.pipeline)) << endl;	
-			//vlog << VerilogFactory::scoper(1, fact.snippet[VerilogFactory::END]) << endl;
-			vlog << fact.snippet[VerilogFactory::END] << endl;
+	  vlog << VerilogFactory::scoper(1, fact.getMulLogic_3_Way_TCM_Step_1(mul.width1, mul.width2, mul.pipeline)) << endl;	
+	  vlog << fact.snippet[VerilogFactory::END] << endl;
       
       // Step_2 (Part-1)
       vlog << endl << "// Step-2 (Part-1) of 3-Way TCM Multiplier" << endl;
@@ -571,7 +553,7 @@ void genMultipliers() {
       vlog << VerilogFactory::scoper(1, fact.getMulLogic_3_Way_TCM_Step_6(mul.width1, mul.width2, mul.pipeline)) << endl;
       vlog << fact.snippet[VerilogFactory::END] << endl;
 
-      			if (mul.pipeline > 1) {
+      if (mul.pipeline > 1) {
 	      			vlog << endl << "// pipeline stages" << endl;
       				vlog << fact.snippet[VerilogFactory::ALWAYS] << endl;
 
@@ -600,18 +582,31 @@ if (mul.name == "four_way_toom_cook") {
 			fact.addIO("a", "input", mul.width1);
 			fact.addIO("b", "input", mul.width2);
 			fact.addIO("c", "output reg", (mul.width1 + mul.width2));
-			
+		fact.genTempVars(mul.pipeline, false);
+	  int width_a = mul.width1 - 1;
+	  int width_b = mul.width2 - 1;
+	  
       // To split the input operands into three equal sizes
       //vlog << "// Here, we split the input operands into three equal sizes" << endl;
-      fact.addWire("a0", (mul.width1/4)); // include wire
-      fact.addWire("a1", (mul.width1/4)); // include wire
-      fact.addWire("a2", (mul.width1/4)); // include wire
-      fact.addWire("a3", (mul.width1/4)); // include wire
-      fact.addWire("b0", (mul.width1/4)); // include wire
-      fact.addWire("b1", (mul.width1/4)); // include wire
-      fact.addWire("b2", (mul.width1/4)); // include wire
-      fact.addWire("b3", (mul.width1/4)); // include wire
-            
+      //fact.addWire("a0", (mul.width1/4)); // include wire
+      //fact.addWire("a1", (mul.width1/4)); // include wire
+      //fact.addWire("a2", (mul.width1/4)); // include wire
+      //fact.addWire("a3", (mul.width1/4)); // include wire
+      //fact.addWire("b0", (mul.width1/4)); // include wire
+      //fact.addWire("b1", (mul.width1/4)); // include wire
+      //fact.addWire("b2", (mul.width1/4)); // include wire
+      //fact.addWire("b3", (mul.width1/4)); // include wire
+      
+	  fact.addWire("a0", ((width_a/4) - 0) + 1); // include wire
+      fact.addWire("a1", (((width_a*2)/4) - ((width_a/4) + 1)) + 1); // include wire
+      fact.addWire("a2", (((width_a*3)/4) - (((width_a*2)/4) + 1)) + 1); // include wire
+	  fact.addWire("a3", (width_a - (((width_a*3)/4) + 1)) + 1); // include wire
+	  
+	  fact.addWire("b0", ((width_b/4) - 0) + 1); // include wire
+      fact.addWire("b1", (((width_b*2)/4) - ((width_b/4) + 1)) + 1); // include wire
+      fact.addWire("b2", (((width_b*3)/4) - (((width_b*2)/4) + 1)) + 1); // include wire
+	  fact.addWire("b3", (width_b - (((width_b*3)/4) + 1)) + 1); // include wire
+	  
       // Counters for each step of 3-Way TCM multiplier
       //vlog << "// Counters deceleration for each step of 3-Way TCM multiplier" << endl;
       fact.addVar("counter_d", (mul.width1/4), false); // will check bits of d
@@ -667,8 +662,10 @@ if (mul.name == "four_way_toom_cook") {
       
       
       vlog << fact.getModuleDefinition() << endl;
-			vlog << fact.getIODefinition() << endl;
+	  vlog << fact.getIODefinition() << endl;
 			//vlog << fact.getTempVars(mul.pipeline) << endl; // pipelined inputs are declared here
+	  vlog << "// Pipeline register declaration " << endl;
+	  vlog << fact.TCM3Pipeline(mul.pipeline) << endl; // pipelined inputs are declared here
       vlog << "// Wires declaration " << endl;
       vlog << fact.getInternalDefinitionWire() << endl;
       vlog << "// Registers declaration " << endl;
@@ -676,15 +673,15 @@ if (mul.name == "four_way_toom_cook") {
       
       // Initial assignments to wires
       vlog << "// Initial assignments to wires" << endl;
-      vlog << "assign a0 = a[" << fact.getInternalDefinitionAssignSetMSB_as_m_over_4() << ":0];" << endl;
-      vlog << "assign a1 = a[" << fact.getInternalDefinitionAssignSetMSB_as_m_times_2_over_4() << ":" << fact.getInternalDefinitionAssignSetLSB_as_m_over_4() << "];" << endl;
-      vlog << "assign a2 = a[" << fact.getInternalDefinitionAssignSetMSB_as_m_times_3_over_4() << ":" << fact.getInternalDefinitionAssignSetLSB_as_m_times_2_over_4() << "];" << endl;
-      vlog << "assign a3 = a[" << fact.getInternalDefinitionAssignSetMSB_as_m_minus_1_for_4_way_TCM() << ":" << fact.getInternalDefinitionAssignSetLSB_as_m_times_3_over_4() << "];" << endl;
+      vlog << "assign a0 = a[" << fact.getInternalDefinitionAssignSetMSB_as_m_over_4("a") << ":0];" << endl;
+      vlog << "assign a1 = a[" << fact.getInternalDefinitionAssignSetMSB_as_m_times_2_over_4("a") << ":" << fact.getInternalDefinitionAssignSetLSB_as_m_over_4("a") << "];" << endl;
+      vlog << "assign a2 = a[" << fact.getInternalDefinitionAssignSetMSB_as_m_times_3_over_4("a") << ":" << fact.getInternalDefinitionAssignSetLSB_as_m_times_2_over_4("a") << "];" << endl;
+      vlog << "assign a3 = a[" << fact.getInternalDefinitionAssignSetMSB_as_m_minus_1_for_4_way_TCM("a") << ":" << fact.getInternalDefinitionAssignSetLSB_as_m_times_3_over_4("a") << "];" << endl;
       
-      vlog << "assign b0 = b[" << fact.getInternalDefinitionAssignSetMSB_as_m_over_4() << ":0];" << endl;
-      vlog << "assign b1 = b[" << fact.getInternalDefinitionAssignSetMSB_as_m_times_2_over_4() << ":" << fact.getInternalDefinitionAssignSetLSB_as_m_over_4() << "];" << endl;
-      vlog << "assign b2 = b[" << fact.getInternalDefinitionAssignSetMSB_as_m_times_3_over_4() << ":" << fact.getInternalDefinitionAssignSetLSB_as_m_times_2_over_4() << "];" << endl;
-      vlog << "assign b3 = b[" << fact.getInternalDefinitionAssignSetMSB_as_m_minus_1_for_4_way_TCM() << ":" << fact.getInternalDefinitionAssignSetLSB_as_m_times_3_over_4() << "];" << endl;
+      vlog << "assign b0 = b[" << fact.getInternalDefinitionAssignSetMSB_as_m_over_4("b") << ":0];" << endl;
+      vlog << "assign b1 = b[" << fact.getInternalDefinitionAssignSetMSB_as_m_times_2_over_4("b") << ":" << fact.getInternalDefinitionAssignSetLSB_as_m_over_4("b") << "];" << endl;
+      vlog << "assign b2 = b[" << fact.getInternalDefinitionAssignSetMSB_as_m_times_3_over_4("b") << ":" << fact.getInternalDefinitionAssignSetLSB_as_m_times_2_over_4("b") << "];" << endl;
+      vlog << "assign b3 = b[" << fact.getInternalDefinitionAssignSetMSB_as_m_minus_1_for_4_way_TCM("b") << ":" << fact.getInternalDefinitionAssignSetLSB_as_m_times_3_over_4("b") << "];" << endl;
       
       
       // Step_1
@@ -823,7 +820,28 @@ if (mul.name == "four_way_toom_cook") {
       vlog << fact.snippet[VerilogFactory::ALWAYS] << endl;
       vlog << fact.getMulLogic_4_Way_TCM_Step_8(mul.width1, mul.width2, mul.pipeline);
       vlog << fact.snippet[VerilogFactory::END] << endl;      
-			vlog << fact.snippet[VerilogFactory::ENDMODULE] << endl;
+		
+		      if (mul.pipeline > 1) {
+	      			vlog << endl << "// pipeline stages" << endl;
+      				vlog << fact.snippet[VerilogFactory::ALWAYS] << endl;
+
+				int i = mul.pipeline;
+				std::string temp;
+
+				temp = "c_temp_"+ std::to_string(i-(i-1)) + " <= g;\n";
+      				vlog << VerilogFactory::scoper(1, temp) << endl;
+
+				while (i > 2) {
+					temp = "c_temp_" + std::to_string(i-1) + " <= c_temp_" + std::to_string(i-2) + ";\n";
+	      				vlog << VerilogFactory::scoper(1, temp) << endl;
+      					i--;
+				}
+
+					vlog << fact.snippet[VerilogFactory::END] << endl;
+			}
+			
+	  vlog << fact.snippet[VerilogFactory::ENDMODULE] << endl;
+		
 		}
    
    if (mul.name == "sbm_digitized") {
