@@ -459,7 +459,7 @@ void genMultipliers() {
       vlog << fact.getModuleDefinition() << endl;
 	  vlog << fact.getIODefinition() << endl;
 	  vlog << "// Pipeline register declaration " << endl;
-	  vlog << fact.TCM3Pipeline(mul.pipeline) << endl; // pipelined inputs are declared here
+	  vlog << fact.TCMPipeline(mul.pipeline, 3) << endl; // pipelined inputs are declared here
       vlog << "// Wires declaration " << endl;
       vlog << fact.getInternalDefinitionWire() << endl;
       vlog << "// Registers declaration " << endl;
@@ -665,7 +665,7 @@ if (mul.name == "four_way_toom_cook") {
 	  vlog << fact.getIODefinition() << endl;
 			//vlog << fact.getTempVars(mul.pipeline) << endl; // pipelined inputs are declared here
 	  vlog << "// Pipeline register declaration " << endl;
-	  vlog << fact.TCM3Pipeline(mul.pipeline) << endl; // pipelined inputs are declared here
+	  vlog << fact.TCMPipeline(mul.pipeline, 4) << endl; // pipelined inputs are declared here
       vlog << "// Wires declaration " << endl;
       vlog << fact.getInternalDefinitionWire() << endl;
       vlog << "// Registers declaration " << endl;
@@ -828,7 +828,7 @@ if (mul.name == "four_way_toom_cook") {
 				int i = mul.pipeline;
 				std::string temp;
 
-				temp = "c_temp_"+ std::to_string(i-(i-1)) + " <= g;\n";
+				temp = "c_temp_"+ std::to_string(i-(i-1)) + " <= temp;\n";
       				vlog << VerilogFactory::scoper(1, temp) << endl;
 
 				while (i > 2) {

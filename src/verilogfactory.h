@@ -36,7 +36,7 @@ class VerilogFactory {
 
 		void genTempVars(int pipeline, bool inputs);
 	std::string BoothPipeline(int pipeline, int width1);
-	std::string TCM3Pipeline(int pipeline);
+	std::string TCMPipeline(int pipeline, int type);
        
 	std::string getModuleDefinition();
 	std::string getIODefinition();
