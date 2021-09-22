@@ -1,4 +1,4 @@
-// TalTech large multiplier library
+// TalTech large integer multiplier library
 // Multiplier type: schoolbook
 // Parameters: 192 192 1
 // Target tool: genus
@@ -13,18 +13,17 @@ output reg [383:0] c;
 reg  [7:0] count;
 
 always @(posedge clk) begin
-	if (rst == 1'b1) begin
+	if (rst == 1'b0) begin
 		c <= 384'd0;
 		count <= 8'd0;
 	end
 	else begin
-if (count < 192) begin
-if (b[count] == 1) begin
-c <= c + (a << count);
-end
-count <= count + 1;
-end
-
+		if (count < 192) begin
+			if (b[count] == 1) begin
+				c <= c + (a << count);
+			end
+			count <= count + 1;
+		end
 	end
 end
 endmodule
