@@ -1,4 +1,4 @@
-// TalTech large multiplier library
+// TalTech large integer multiplier library
 // Multiplier type: four_way_toom_cook
 // Parameters: 571 571 1
 // Target tool: genus
@@ -9,15 +9,17 @@ input [570:0] a;
 input [570:0] b;
 output reg [1141:0] c;
 
+// Pipeline register declaration 
+// no pipeline vars
 // Wires declaration 
-wire  [141:0] a0;
-wire  [141:0] a1;
+wire  [142:0] a0;
+wire  [142:0] a1;
 wire  [141:0] a2;
-wire  [141:0] a3;
-wire  [141:0] b0;
-wire  [141:0] b1;
+wire  [142:0] a3;
+wire  [142:0] b0;
+wire  [142:0] b1;
 wire  [141:0] b2;
-wire  [141:0] b3;
+wire  [142:0] b3;
 
 // Registers declaration 
 reg  [141:0] counter_d;
@@ -60,19 +62,18 @@ reg  [570:0] j;
 reg  [1141:0] temp;
 
 // Initial assignments to wires
-assign a0 = a[141:0];
-assign a1 = a[283:142];
-assign a2 = a[425:284];
-assign a3 = a[567:426];
-assign b0 = b[141:0];
-assign b1 = b[283:142];
-assign b2 = b[425:284];
-assign b3 = b[567:426];
+assign a0 = a[142:0];
+assign a1 = a[285:143];
+assign a2 = a[427:286];
+assign a3 = a[570:428];
+assign b0 = b[142:0];
+assign b1 = b[285:143];
+assign b2 = b[427:286];
+assign b3 = b[570:428];
 
 // Step-1 of 4-Way TCM Multiplier
 always @(posedge clk) begin
-		if (rst) begin
-			counter_d <= 142'd0;
+		if (rst) begin			counter_d <= 142'd0;
 			d <= 571'd0;
 		end
 		else if (counter_d < 143) begin
@@ -80,7 +81,7 @@ always @(posedge clk) begin
 				d <= d ^ (b3 << counter_d);
 				counter_d <= counter_d + 1;
 			end
-				counter_d <= counter_d + 1;
+			counter_d <= counter_d + 1;
 		end
 end
 
@@ -95,7 +96,7 @@ always @(posedge clk) begin
 				e1_mul <= e1_mul ^ (b3 << counter_e1);
 				counter_e1 <= counter_e1 + 1;
 			end
-				counter_e1 <= counter_e1 + 1;
+			counter_e1 <= counter_e1 + 1;
 		end
 end
 
@@ -110,7 +111,7 @@ always @(posedge clk) begin
 				e2_mul <= e2_mul ^ (b2 << counter_e2);
 				counter_e2 <= counter_e2 + 1;
 			end
-				counter_e2 <= counter_e2 + 1;
+			counter_e2 <= counter_e2 + 1;
 		end
 end
 
@@ -120,7 +121,7 @@ always @(posedge clk) begin
 			e <= 571'd0;
 		end
 		else begin
-			e <= e1_mul ^ e2_mul; 
+			e <= e1_mul ^ e2_mul;
 		end
 end
 
@@ -135,7 +136,7 @@ always @(posedge clk) begin
 				f1_mul <= f1_mul ^ (b3 << counter_f1);
 				counter_f1 <= counter_f1 + 1;
 			end
-				counter_f1 <= counter_f1 + 1;
+			counter_f1 <= counter_f1 + 1;
 		end
 end
 
@@ -150,7 +151,7 @@ always @(posedge clk) begin
 				f2_mul <= f2_mul ^ (b2 << counter_f2);
 				counter_f2 <= counter_f2 + 1;
 			end
-				counter_f2 <= counter_f2 + 1;
+			counter_f2 <= counter_f2 + 1;
 		end
 end
 
@@ -165,7 +166,7 @@ always @(posedge clk) begin
 				f3_mul <= f3_mul ^ (b1 << counter_f3);
 				counter_f3 <= counter_f3 + 1;
 			end
-				counter_f3 <= counter_f3 + 1;
+			counter_f3 <= counter_f3 + 1;
 		end
 end
 
@@ -175,7 +176,7 @@ always @(posedge clk) begin
 			f <= 571'd0;
 		end
 		else begin
-			f <= f1_mul ^ f2_mul ^ f3_mul; 
+			f <= f1_mul ^ f2_mul ^ f3_mul;
 		end
 end
 
@@ -190,7 +191,7 @@ always @(posedge clk) begin
 				g1_mul <= g1_mul ^ (b3 << counter_g1);
 				counter_g1 <= counter_g1 + 1;
 			end
-				counter_g1 <= counter_g1 + 1;
+			counter_g1 <= counter_g1 + 1;
 		end
 end
 
@@ -205,7 +206,7 @@ always @(posedge clk) begin
 				g2_mul <= g2_mul ^ (b2 << counter_g2);
 				counter_g2 <= counter_g2 + 1;
 			end
-				counter_g2 <= counter_g2 + 1;
+			counter_g2 <= counter_g2 + 1;
 		end
 end
 
@@ -220,7 +221,7 @@ always @(posedge clk) begin
 				g3_mul <= g3_mul ^ (b1 << counter_g3);
 				counter_g3 <= counter_g3 + 1;
 			end
-				counter_g3 <= counter_g3 + 1;
+			counter_g3 <= counter_g3 + 1;
 		end
 end
 
@@ -235,7 +236,7 @@ always @(posedge clk) begin
 				g4_mul <= g4_mul ^ (b0 << counter_g4);
 				counter_g4 <= counter_g4 + 1;
 			end
-				counter_g4 <= counter_g4 + 1;
+			counter_g4 <= counter_g4 + 1;
 		end
 end
 
@@ -245,7 +246,7 @@ always @(posedge clk) begin
 			g <= 571'd0;
 		end
 		else begin
-			g <= g1_mul ^ g2_mul ^ g3_mul ^ g4_mul; 
+			g <= g1_mul ^ g2_mul ^ g3_mul ^ g4_mul;
 		end
 end
 
@@ -260,7 +261,7 @@ always @(posedge clk) begin
 				h1_mul <= h1_mul ^ (b2 << counter_h1);
 				counter_h1 <= counter_h1 + 1;
 			end
-				counter_h1 <= counter_h1 + 1;
+			counter_h1 <= counter_h1 + 1;
 		end
 end
 
@@ -271,10 +272,10 @@ always @(posedge clk) begin
 			h2_mul <= 571'd0;
 		end
 		else if (counter_h2 < 143) begin
-		if (a1[counter_h2] == 1'b1) begin
-			h2_mul <= h2_mul ^ (b1 << counter_h2);
-			counter_h2 <= counter_h2 + 1;
-		end
+			if (a1[counter_h2] == 1'b1) begin
+				h2_mul <= h2_mul ^ (b1 << counter_h2);
+				counter_h2 <= counter_h2 + 1;
+			end
 			counter_h2 <= counter_h2 + 1;
 		end
 end
@@ -290,7 +291,7 @@ always @(posedge clk) begin
 				h3_mul <= h3_mul ^ (b0 << counter_h3);
 				counter_h3 <= counter_h3 + 1;
 			end
-				counter_h3 <= counter_h3 + 1;
+			counter_h3 <= counter_h3 + 1;
 		end
 end
 
@@ -300,7 +301,7 @@ always @(posedge clk) begin
 			h <= 571'd0;
 		end
 		else begin
-			h <= h1_mul ^ h2_mul ^ h3_mul; 
+			h <= h1_mul ^ h2_mul ^ h3_mul;
 		end
 end
 
@@ -315,7 +316,7 @@ always @(posedge clk) begin
 				i1_mul <= i2_mul ^ (b1 << counter_i1);
 				counter_i1 <= counter_i1 + 1;
 			end
-				counter_i1 <= counter_i1 + 1;
+			counter_i1 <= counter_i1 + 1;
 		end
 end
 
@@ -330,7 +331,7 @@ always @(posedge clk) begin
 				i2_mul <= i2_mul ^ (b0 << counter_i2);
 				counter_i2 <= counter_i2 + 1;
 			end
-				counter_i2 <= counter_i2 + 1;
+			counter_i2 <= counter_i2 + 1;
 		end
 end
 
@@ -340,7 +341,7 @@ always @(posedge clk) begin
 			i <= 571'd0;
 		end
 		else begin
-			i <= i1_mul ^ i2_mul; 
+			i <= i1_mul ^ i2_mul;
 		end
 end
 
@@ -355,7 +356,7 @@ always @(posedge clk) begin
 				j = j ^ (b0 << counter_j);
 				counter_j = counter_j + 1;
 			end
-				counter_j = counter_j + 1;
+			counter_j = counter_j + 1;
 		end
 end
 

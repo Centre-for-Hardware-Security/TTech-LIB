@@ -1655,20 +1655,20 @@ std::string VerilogFactory::getMulLogic_sbm_digitized_FSM_sequential_logic(int w
 	std::string tmp;
 
 	if (pipeline == 1){
-    tmp = scoper(1, "if (rst == 1'b1) begin\n");
-		tmp = tmp + scoper(2, "state <= ST_RUN;\n");
-    tmp = tmp + scoper(2, "c <= " + std::to_string(width1+width2) + "'b0;\n");
-    tmp = tmp + scoper(2, "counter_digits <= " + std::to_string(width2/digit_size) + "'b0;\n");
-    tmp = tmp + scoper(2, "short_b <= " + std::to_string(digit_size) + "'b0;\n");
-    tmp = tmp + scoper(2, "digit_mul_start <= 1'b0;\n");
-    tmp = tmp + scoper(1, "end\n");
-    tmp = tmp + scoper(1, "else begin\n");
-		tmp = tmp + scoper(2, "state <= next_state;\n");
-    tmp = tmp + scoper(2, "c <= next_c;\n");
-    tmp = tmp + scoper(2, "counter_digits <= counter_digits_next;\n");
-    tmp = tmp + scoper(2, "short_b <= short_b_next;\n");
-    tmp = tmp + scoper(2, "digit_mul_start <= digit_mul_start_next;\n");
-    tmp = tmp + scoper(1, "end\n");
+    tmp = scoper(1, "if (rst == 1'b1) begin") + "\n";
+		tmp = tmp + scoper(2, "state <= ST_RUN;") + "\n";
+    tmp = tmp + scoper(2, "c <= " + std::to_string(width1+width2) + "'b0;") + "\n";
+    tmp = tmp + scoper(2, "counter_digits <= " + std::to_string(width2/digit_size) + "'b0;") + "\n";
+    tmp = tmp + scoper(2, "short_b <= " + std::to_string(digit_size) + "'b0;") + "\n";
+    tmp = tmp + scoper(2, "digit_mul_start <= 1'b0;") + "\n";
+    tmp = tmp + scoper(1, "end") + "\n";
+    tmp = tmp + scoper(1, "else begin") + "\n";
+		tmp = tmp + scoper(2, "state <= next_state;") + "\n";
+    tmp = tmp + scoper(2, "c <= next_c;") + "\n";
+    tmp = tmp + scoper(2, "counter_digits <= counter_digits_next;") + "\n";
+    tmp = tmp + scoper(2, "short_b <= short_b_next;") + "\n";
+    tmp = tmp + scoper(2, "digit_mul_start <= digit_mul_start_next;") + "\n";
+    tmp = tmp + scoper(1, "end") + "\n";
     return tmp; // no pipelining version  
    }
 }
@@ -1678,56 +1678,56 @@ std::string VerilogFactory::getMulLogic_sbm_digitized_FSM_combinational_logic(in
 	std::string tmp;
 
 	if (pipeline == 1){
-    tmp = scoper(0, "always @ (*) begin \n");
-		tmp = tmp + scoper(1, "next_state = state;\n");
-    tmp = tmp + scoper(1, "next_c = c;\n");
-    tmp = tmp + scoper(1, "digit_mul_start_next = digit_mul_start;\n");
-    tmp = tmp + scoper(1, "local_rst = 0;\n");
-    tmp = tmp + scoper(1, "counter_digits_next = counter_digits;\n");
-    tmp = tmp + scoper(1, "short_b_next = short_b;\n");
-		tmp = tmp + scoper(1, "tmp = tmp;\n");
+    tmp = scoper(0, "always @ (*) begin ") + "\n";
+		tmp = tmp + scoper(1, "next_state = state;") + "\n";
+    tmp = tmp + scoper(1, "next_c = c;") + "\n";
+    tmp = tmp + scoper(1, "digit_mul_start_next = digit_mul_start;") + "\n";
+    tmp = tmp + scoper(1, "local_rst = 0;") + "\n";
+    tmp = tmp + scoper(1, "counter_digits_next = counter_digits;") + "\n";
+    tmp = tmp + scoper(1, "short_b_next = short_b;") + "\n";
+		tmp = tmp + scoper(1, "tmp = tmp;") + "\n";
     
     // First state
-    tmp = tmp + scoper(1, "case (state)\n");
-    tmp = tmp + scoper(2, "ST_RUN: begin\n");
-    tmp = tmp + scoper(3, "tmp[" + std::to_string(width2-1) + ":0] = b[" + std::to_string(width2-1) + ":0];\n");
-    tmp = tmp + scoper(3, "lower_addr = counter_digits_next*(" + std::to_string(digit_size) + ");\n");
-    tmp = tmp + scoper(3, "short_b_next = tmp[lower_addr+:" + std::to_string(digit_size) + "];\n");
-    tmp = tmp + scoper(3, "if (counter_digits_next < " + std::to_string(width2/digit_size) + ") begin\n");
-    tmp = tmp + scoper(4, "digit_mul_start_next = 1'b1;\n");
-    tmp = tmp + scoper(4, "next_state = ST_WAIT;\n");
-    tmp = tmp + scoper(3, "end\n");
-    tmp = tmp + scoper(3, "else begin \n");
-    tmp = tmp + scoper(4, "next_state = ST_OFFSET;\n");
-    tmp = tmp + scoper(3, "end\n");
-    tmp = tmp + scoper(2, "end\n");
+    tmp = tmp + scoper(1, "case (state)") + "\n";
+    tmp = tmp + scoper(2, "ST_RUN: begin") + "\n";
+    tmp = tmp + scoper(3, "tmp[" + std::to_string(width2-1) + ":0] = b[" + std::to_string(width2-1) + ":0];") + "\n";
+    tmp = tmp + scoper(3, "lower_addr = counter_digits_next*(" + std::to_string(digit_size) + ");") + "\n";
+    tmp = tmp + scoper(3, "short_b_next = tmp[lower_addr+:" + std::to_string(digit_size) + "];") + "\n";
+    tmp = tmp + scoper(3, "if (counter_digits_next < " + std::to_string(width2/digit_size) + ") begin") + "\n";
+    tmp = tmp + scoper(4, "digit_mul_start_next = 1'b1;") + "\n";
+    tmp = tmp + scoper(4, "next_state = ST_WAIT;") + "\n";
+    tmp = tmp + scoper(3, "end") + "\n";
+    tmp = tmp + scoper(3, "else begin ") + "\n";
+    tmp = tmp + scoper(4, "next_state = ST_OFFSET;") + "\n";
+    tmp = tmp + scoper(3, "end") + "\n";
+    tmp = tmp + scoper(2, "end") + "\n";
     
     // Second state
-    tmp = tmp + scoper(2, "ST_WAIT: begin\n");
-    tmp = tmp + scoper(3, "if (digit_mul_done == 1'b1) begin\n");
-    tmp = tmp + scoper(4, "digit_mul_start_next = 1'b0;\n");
-    tmp = tmp + scoper(4, "counter_digits_next = counter_digits_next +1;\n");
-    tmp = tmp + scoper(4, "next_state = ST_OFFSET;\n");
-    tmp = tmp + scoper(3, "end\n");
-    tmp = tmp + scoper(3, "else begin \n");
-    tmp = tmp + scoper(4, "next_state = ST_WAIT;\n");
-    tmp = tmp + scoper(3, "end\n");
-    tmp = tmp + scoper(2, "end\n");
+    tmp = tmp + scoper(2, "ST_WAIT: begin") + "\n";
+    tmp = tmp + scoper(3, "if (digit_mul_done == 1'b1) begin") + "\n";
+    tmp = tmp + scoper(4, "digit_mul_start_next = 1'b0;") + "\n";
+    tmp = tmp + scoper(4, "counter_digits_next = counter_digits_next +1;") + "\n";
+    tmp = tmp + scoper(4, "next_state = ST_OFFSET;") + "\n";
+    tmp = tmp + scoper(3, "end") + "\n";
+    tmp = tmp + scoper(3, "else begin ") + "\n";
+    tmp = tmp + scoper(4, "next_state = ST_WAIT;") + "\n";
+    tmp = tmp + scoper(3, "end") + "\n";
+    tmp = tmp + scoper(2, "end") + "\n";
     
     // Third state
-    tmp = tmp + scoper(2, "ST_OFFSET: begin\n");
+    tmp = tmp + scoper(2, "ST_OFFSET: begin") + "\n";
     tmp = tmp + scoper(3, "next_c = next_c + (short_c << "+ std::to_string(digit_size) + " *(counter_digits_next-1));\n");
-    tmp = tmp + scoper(3, "next_state = ST_RST;\n");
-    tmp = tmp + scoper(2, "end\n");
+    tmp = tmp + scoper(3, "next_state = ST_RST;") + "\n";
+    tmp = tmp + scoper(2, "end") + "\n";
     
     // Fourth state
-    tmp = tmp + scoper(2, "ST_RST: begin\n");
-    tmp = tmp + scoper(3, "local_rst = 1'b1;\n");
-    tmp = tmp + scoper(3, "next_state = ST_RUN;\n");
-    tmp = tmp + scoper(2, "end\n");
+    tmp = tmp + scoper(2, "ST_RST: begin") + "\n";
+    tmp = tmp + scoper(3, "local_rst = 1'b1;") + "\n";
+    tmp = tmp + scoper(3, "next_state = ST_RUN;") + "\n";
+    tmp = tmp + scoper(2, "end") + "\n";
 
-    tmp = tmp + scoper(1, "endcase\n");
-    tmp = tmp + scoper(0, "end\n");
+    tmp = tmp + scoper(1, "endcase") + "\n";
+    tmp = tmp + scoper(0, "end") + "\n";
     return tmp; // no pipelining version  
    }
 }
@@ -1740,27 +1740,27 @@ std::string VerilogFactory::getMulLogic_multiplier_inside_sbm_digitized(int widt
     
     // Multiplier module inside the digitized version
     
-    tmp = scoper(0, "always @ (posedge clk) begin \n");
-		tmp = tmp + scoper(1, "if ((rst == 1'b1) || (local_rst == 1'b1)) begin\n");
-    tmp = tmp + scoper(2, "c <= {SHORTA+SHORTB { 1'b0}};\n");
-    tmp = tmp + scoper(2, "count <= 12'd0;\n");
-    tmp = tmp + scoper(2, "digit_mul_done <= 1'b0;\n");
-		tmp = tmp + scoper(1, "end\n");
+    tmp = scoper(0, "always @ (posedge clk) begin ") + "\n";
+		tmp = tmp + scoper(1, "if ((rst == 1'b1) || (local_rst == 1'b1)) begin") + "\n";
+    tmp = tmp + scoper(2, "c <= {SHORTA+SHORTB { 1'b0}};") + "\n";
+    tmp = tmp + scoper(2, "count <= 12'd0;") + "\n";
+    tmp = tmp + scoper(2, "digit_mul_done <= 1'b0;") + "\n";
+		tmp = tmp + scoper(1, "end") + "\n";
    
-    tmp = tmp + scoper(1, "else begin\n");
-    tmp = tmp + scoper(2, "if (digit_mul_start == 1'b1) begin\n");
-    tmp = tmp + scoper(3, "if (count < SHORTB) begin\n");
-    tmp = tmp + scoper(4, "if (b[count] == 1) begin\n");
-    tmp = tmp + scoper(5, "c <= c + (a << count);\n");
-		tmp = tmp + scoper(4, "end\n");
-    tmp = tmp + scoper(5, "count <= count + 12'd1;\n");
-    tmp = tmp + scoper(3, "end\n");
-    tmp = tmp + scoper(3, "else begin\n");
-    tmp = tmp + scoper(4, "digit_mul_done <= 1'b1;\n");
-    tmp = tmp + scoper(3, "end\n");
-    tmp = tmp + scoper(2, "end\n");
-    tmp = tmp + scoper(1, "end\n");
-    tmp = tmp + scoper(0, "end\n");
+    tmp = tmp + scoper(1, "else begin") + "\n";
+    tmp = tmp + scoper(2, "if (digit_mul_start == 1'b1) begin") + "\n";
+    tmp = tmp + scoper(3, "if (count < SHORTB) begin") + "\n";
+    tmp = tmp + scoper(4, "if (b[count] == 1) begin") + "\n";
+    tmp = tmp + scoper(5, "c <= c + (a << count);") + "\n";
+		tmp = tmp + scoper(4, "end") + "\n";
+    tmp = tmp + scoper(5, "count <= count + 12'd1;") + "\n";
+    tmp = tmp + scoper(3, "end") + "\n";
+    tmp = tmp + scoper(3, "else begin") + "\n";
+    tmp = tmp + scoper(4, "digit_mul_done <= 1'b1;") + "\n";
+    tmp = tmp + scoper(3, "end") + "\n";
+    tmp = tmp + scoper(2, "end") + "\n";
+    tmp = tmp + scoper(1, "end") + "\n";
+    tmp = tmp + scoper(0, "end") + "\n";
     return tmp; // no pipelining version  
    }
 }

@@ -1,11 +1,11 @@
 #created by TMlib
 set_db information_level 99
-set_db syn_global_effort express
-set_db syn_generic_effort express
-set_db syn_map_effort express
-set_db syn_opt_effort express
+set_db syn_global_effort high
+set_db syn_generic_effort high
+set_db syn_map_effort high
+set_db syn_opt_effort high
 set_db retime_verification_flow false
-set LIB {your_lib_path.lib}
+set LIB {/export/designkits/tsmc/tsmc65/ip/msrflp/STDCELL/tcbn65lphvt_220a/FE/TSMCHOME/digital/Front_End/timing_power_noise/NLDM/tcbn65lphvt_220a/tcbn65lphvttc.lib}
 set SOURCE_PATH {../../vlog/schoolbook/}
 set FILE_LIST {schoolbook.192x192.pip1.v}
 set_db init_hdl_search_path "$SOURCE_PATH"
@@ -19,8 +19,7 @@ time_info
 check_design -unresolved
 set_time_unit -nanoseconds
 set CLK_PORT_NAME clk
-create_clock -name "fast" -period 2 $CLK_PORT_NAME
-#double check this input delay line
+create_clock -name "fast" -period 1.92 $CLK_PORT_NAME
 set_input_delay -clock fast 0.001 [all_inputs]
 set_dont_use SDF*
 set_dont_use SED*
