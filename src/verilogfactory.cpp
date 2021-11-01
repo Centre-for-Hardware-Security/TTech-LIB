@@ -721,8 +721,9 @@ std::string VerilogFactory::TCMPipeline(int pipeline, int type) {
 			tmp = tmp + "reg " + range + " " + name + ";\n";
 			times--;
 			}
+			// Here we replace 0 or 2 for input it is zero and 2 for output reg 
 			if (type == 4){
-			std::string range = "[" + std::to_string(inputs[2]) + ":0]";
+			std::string range = "[" + std::to_string(inputs[0]) + ":0]";
 			std::string name = "c_temp_" + std::to_string(times);
 			tmp = tmp + "reg " + range + " " + name + ";\n";
 			times--;
@@ -1567,7 +1568,7 @@ std::string VerilogFactory::getMulLogic_4_Way_TCM_Step_8(int width1, int width2,
 	tmp = tmp + scoper(3, "temp = temp ^ (i << " + std::to_string(width1/4) + ");") + "\n";
     tmp = tmp + scoper(3, "temp = temp ^ (h << " + std::to_string((width1/4)*2) + ");") + "\n";
     tmp = tmp + scoper(3, "temp = temp ^ (g << " + std::to_string((width1/4)*3) + ");") + "\n";
-    tmp = tmp + scoper(3, "temp = " + regname + " ^ (f << " + std::to_string((width1/4)*4) + ");") + "\n";
+    tmp = tmp + scoper(3, "temp = temp ^ (" + regname + " << " + std::to_string((width1/4)*4) + ");") + "\n";
     tmp = tmp + scoper(3, "temp = temp ^ (e << " + std::to_string((width1/4)*5) + ");") + "\n";
     tmp = tmp + scoper(3, "temp = temp ^ (d << " + std::to_string((width1/4)*6) + ");") + "\n";
     tmp = tmp + scoper(3, "c = temp;") + "\n";

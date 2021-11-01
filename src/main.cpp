@@ -834,7 +834,7 @@ if (mul.name == "four_way_toom_cook") {
 				int i = mul.pipeline;
 				std::string temp;
 
-				temp = "c_temp_"+ std::to_string(i-(i-1)) + " <= temp;\n";
+				temp = "c_temp_"+ std::to_string(i-(i-1)) + " <= g;\n";
       				vlog << VerilogFactory::scoper(1, temp) << endl;
 
 				while (i > 2) {
